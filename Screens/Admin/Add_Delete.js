@@ -11,6 +11,10 @@ const Add_Delete = ({navigation}) => {
     const {register,logout} = useContext(AuthContext)
 
     const handleAdd = () => {
+        if(name === "" || email === "" || password === ""){
+            Alert.alert("Please fill all the fields");
+        }
+        else{
         database()
           .ref('/Admin/Counsellors')
           .update({
@@ -24,7 +28,8 @@ const Add_Delete = ({navigation}) => {
             setPassword("")
           }
           );
-      };
+        }     
+    };
 
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>

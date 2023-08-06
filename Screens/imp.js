@@ -8,4 +8,12 @@ Name:Harsh Agrawal
 email: aharsh236@gmail.com
 password: aharsh236@gmail.com
 
+
+// TODO: 
+Tell the client that everytime when new counsellor is added including password, while
+that counsellor logins for first time then he/she needs to click on forget password, then
+an email will be sent for changing the password, then use that password to login for first time
+
+No need to click on forget password everytime, you can use it if you forgot the password 
+
 */

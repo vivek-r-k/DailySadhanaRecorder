@@ -1,5 +1,5 @@
-import React, {useContext, useState, useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import React, { useContext, useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import { AuthContext } from './Authprovider';
 
@@ -12,11 +12,10 @@ import Datewise from '../Counsellors/Datewise';
 import UserProfile from '../Counselees/UserProfile';
 import AdminAppStack from './AdminAppstack';
 import CounAppStack from './CounAppstack';
-// import AppStack from './AppStack';
 import database from '@react-native-firebase/database';
 
 const Routes = () => {
-  const {user, setUser} = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const [initializing, setInitializing] = useState(true);
 
   const onAuthStateChanged = (user) => {
@@ -29,33 +28,37 @@ const Routes = () => {
     return subscriber; // unsubscribe on unmount
   }, []);
 
+  const [counsellorEmails, setCounsellorEmails] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const Test = database().ref('/Admin/Counsellors/');
+        Test.on('value', snapshot => {
+          const data = snapshot.val();
+          const emails = Object.values(data).reduce((acc, curr) => {
+            if (curr.Admin !== true && curr.Email) {
+              acc.push(curr.Email);
+            }
+            return acc;
+          }, []);
+          setCounsellorEmails(emails);
+          console.log(counsellorEmails);
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData(); // Call the async function
+
+    return () => {
+      const Test = database().ref('/Admin/Counsellors/');
+      Test.off();
+    };
+  }, []);
+
   if (initializing) return null;
-
-  // TODO: change the below one
-  const CounsellorEmails = ["vivekanandrkumachagi@gmail.com", "vivekanandrk2001@gmail.com"] 
-  // const [counsellorEmails, setCounsellorEmails] = useState([]);
-  //       useEffect(() => {
-  //       const fetchData = async () => {
-  //       const Test = database().ref('/Admin/Counsellors/')
-  //       Test.on('value', snapshot => {
-  //           const data = snapshot.val();
-  //           console.log("line 47: ",typeof(data));
-  //           const filteredEmails = Object.values(data)
-  //           .filter(item => !item.Admin) // Excludes items with Admin: true
-  //           .map(item => item.Email);
-      
-  //         // Update the state with the filtered email values
-  //         setCounsellorEmails(filteredEmails);
-  //         console.log("line 53: ",counsellorEmails);
-  //       });
-  //       };
-  //       fetchData(); // Call the async function 
-
-  //       return () => {
-  //       const Test = database().ref('/Admin/');
-  //       Test.off();
-  //       };
-  //   }, []);
 
   return (
     <NavigationContainer>
@@ -65,11 +68,12 @@ const Routes = () => {
         {(!user) ? (
         <AuthStack />
         ) : user.email === "aharsh236@gmail.com" ? (
-        // TODO: create app stack for admin separately
             <AdminAppStack />
-        ) : CounsellorEmails.includes(user.email) ? (
+        ) : counsellorEmails.includes(user.email) ? (
             <CounAppStack />
         ) : (
+          // TODO: here also check only added emails to log in because, its my bad that i didn't
+          // handle backend
         <UserProfile />
         )}  
 

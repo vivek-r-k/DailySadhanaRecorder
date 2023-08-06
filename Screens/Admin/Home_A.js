@@ -37,6 +37,31 @@ const Home_A = ({navigation}) => {
         fetchData(); // Call the async function
       }, []);
 
+      const [counsellorEmails, setCounsellorEmails] = useState([]);
+      useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref('/Admin/Counsellors/');
+          Test.on('value', snapshot => {
+            const data = snapshot.val();
+            const emails = Object.values(data).reduce((acc, curr) => {
+              if (curr.Admin !== true && curr.Email) {
+                acc.push(curr.Email);
+              }
+              return acc;
+            }, []);
+            setCounsellorEmails(emails);
+            console.log("line 53",typeof(counsellorEmails));
+            console.log("line 54",counsellorEmails);
+          });
+        };
+        fetchData(); // Call the async function 
+        
+        return () => {
+        const Test = database().ref('/Admin/Counsellors/');
+        Test.off();
+        };
+    }, []);
+
     const handleRowPress = (row) => {
         // Show a confirm delete dialog using Alert
         Alert.alert(
