@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable,
 import { AuthContext } from "../Authetication/Authprovider";
 import LinearGradient from "react-native-linear-gradient";
 import database from '@react-native-firebase/database';
+import {Picker} from '@react-native-picker/picker';
 
 const Add_Delete = ({navigation}) => {
     const [name,setName] = useState("");
@@ -65,6 +66,7 @@ const Add_Delete = ({navigation}) => {
                         defaultValue={password}
                     />
                 </View>
+                
                 <View style={{margin: "3%"}}>
                     <TouchableOpacity 
                         style={styles.button} 

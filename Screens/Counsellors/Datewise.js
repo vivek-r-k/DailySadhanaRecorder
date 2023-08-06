@@ -57,16 +57,7 @@ const Datewise = () => {
                 <View style={styles.container}>
                     <Text style={styles.UserName}>Datewise data</Text>
                 </View>
-                <View style={{justifyContent:'center'}}>
-                    <Text style={{
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        fontSize: 30,
-                        // marginTop: 20,
-                        fontWeight: 'bold',
-                        color: 'black'
-                    }}>Counselees</Text>
-                </View>
+                <View style={{justifyContent:'center',flex:1,margin:'3%'}}>
                 {/* <TouchableOpacity onPress={() => navigate(goToSignleDateScreen)}> */}
                     <FlatList
                             data={datesArray}
@@ -75,6 +66,7 @@ const Datewise = () => {
                             keyExtractor={(item, index) => index.toString()}
                     />
                 {/* </TouchableOpacity> */}
+                </View>
             </ScrollView>
         </SafeAreaView>
         </LinearGradient>
@@ -91,7 +83,7 @@ const styles = StyleSheet.create({
     UserName:{
         justifyContent: 'center',
         alignSelf: 'center',
-        fontSize: 50,
+        fontSize: 40,
         marginTop: 20,
         fontWeight: 'bold',
         color: 'black'

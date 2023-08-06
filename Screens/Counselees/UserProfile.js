@@ -6,13 +6,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Dimensions } from "react-native";
 import { AuthContext } from "../Authetication/Authprovider";
 import LinearGradient from "react-native-linear-gradient";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const UserProfile = () => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const [attendance, setAttendance] = useState("");
     const { logout } = useContext(AuthContext)
-
     // dummy data for piechart
     const data = [
         {
@@ -49,7 +49,19 @@ const UserProfile = () => {
         useShadowColorFromDataset: false // optional
     };
 
-    const screenWidth = Dimensions.get("window").width;
+    const [value, onChange] = useState(new Date());
+    const [showTimePicker, setShowTimePicker] = useState(false);
+
+    const onTimeChange = (event, selectedDate) => {
+        setShowTimePicker(false);
+        if (selectedDate !== undefined) {
+        onChange(selectedDate);
+        }
+    };
+
+    const showTimePickerHandler = () => {
+        setShowTimePicker(true);
+    };
 
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
@@ -82,10 +94,25 @@ const UserProfile = () => {
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Chanting done at: </Text>
-                    <TextInput style={styles.input} placeholder="eg: 15:20"/>
+                    <TouchableOpacity style={styles.input} onPress={showTimePickerHandler}>
+                        <Text style={{alignSelf:'center',justifyContent:'center', flex:1}}>
+                            {value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Text>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => alert("If chanting completed after 23:59 i.e on next day, please fill 23:59 only.")}>
                         <Text><Icon name="information-circle-outline" size={30} color="#900" /></Text>
                     </TouchableOpacity>
+
+                    {showTimePicker && (
+                        <DateTimePicker
+                        testID="dateTimePicker"
+                        value={value}
+                        mode="time"
+                        is24Hour={true}
+                        display="default"
+                        onChange={onTimeChange}
+                        />
+                    )}
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Attendance: </Text>

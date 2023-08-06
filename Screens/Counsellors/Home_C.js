@@ -1,68 +1,127 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, useColorScheme,Alert, TouchableOpacity } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import LinearGradient from "react-native-linear-gradient";
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 
 const Home_C = ({navigation}) => {
-    // onPress={() => navigation.navigate('Details_of_Counselee')}
-    const colorScheme = useColorScheme();
-    const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
+    // Below is for getting the name
+    const currentUser = auth().currentUser;
+    // console.log("currentUser.email: ",currentUser.email);
+
+    const [name,setName] = useState('')
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref('/Admin/Counsellors/');
+          Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log("line 19:",data);
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                  const user = data[key];
+                  if (user.Email === currentUser.email) {
+                    setName(key);
+                    // console.log("line25: ",key);
+                    break; // Exit the loop once the matching user is found
+                  }
+                }
+              }
+            });
+            // console.log("(line 28)name: ",name); 
+        };
+        fetchData(); // Call the async function
+    }, []);
+
+    // Below is for getting latest entered date
+    const [when,setWhen] = useState('')
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref(`/Counsellor/${name}/`);
+          Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log("line 43:",data);
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    setWhen(key)
+                //   console.log("line 47: ",key); 
+                } 
+              }
+            });
+            // console.log("(line 51)when: ",when); 
+        };
+        fetchData(); // Call the async function
+    }, []);
 
     const tableHead1 = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
     const tableData1 = [
-        ['Pankaj Meena', '30/07/23', 'Present', '130','130','130'],
-        ['Suryapati achyuta das', '30/07/23', 'Absent','130','130','130'],
-        ['Bob Johnson', '30/07/23', 'Late','130','130','130'],
+        ['Anu', '06/08/23', 'Present', '13:00','130','130'],
+        ['Pankaj', '06/08/23', 'Absent','15:30','130','130'],
+        ['Rakshit', '06/08/23', 'Late','11:10','130','130'],
     ];
+
+    // ----------------------------Get from database for table 1---------------------------- \\
+    const [tableData3,setTableData3] = useState([])  
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref(`/Counsellor/${name}/${when}/SecondYear/`);
+      
+          // Wrap the event listener in a Promise
+          const snapshotPromise = new Promise((resolve) => {
+            Test.on('value', (snapshot) => {
+              resolve(snapshot);
+            });
+          });
+      
+          // Wait for the Promise to resolve
+          const snapshot = await snapshotPromise;
+      
+          const data = snapshot.val();
+          const currentDate = new Date().toLocaleDateString();
+      
+          const tableData = Object.keys(data).map((name) => {
+            const { Attendance, Chanting, Hearing, Reading } = data[name];
+            return [name, currentDate, Attendance, Chanting, Hearing.toString(), Reading.toString()];
+          });
+      
+          setTableData3(tableData)
+        //   console.log("line 88", tableData);  
+          console.log("line 89", tableData3);  
+        };
+        
+        fetchData(); // Call the async function
+      }, []);
+      
+    // -------------------End of getting from database for table 1------------------------- \\
+
     const handleRowPress1 = (rowData) => {
         Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
         // navigation.navigate('')
-    }
-
-    const tableHead2 = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
-    const tableData2 = [
-        ['Pankaj Meena', '30/07/23', 'Present', '130','130','130'],
-        ['Suryapati achyuta das', '30/07/23', 'Absent','130','130','130'],
-        ['Bob Johnson', '30/07/23', 'Late','130','130','130'],
-    ];
-
-    const tableHead3 = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
-    const tableData3 = [
-        ['Pankaj Meena', '30/07/23', 'Present', '130','130','130'],
-        ['Suryapati achyuta das', '30/07/23', 'Absent','130','130','130'],
-        ['Bob Johnson', '30/07/23', 'Late','130','130','130'],
-    ];
-
-    const tableHead4 = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
-    const tableData4 = [
-        ['Pankaj Meena', '30/07/23', 'Present', '130','130','130'],
-        ['Suryapati achyuta das', '30/07/23', 'Absent','130','130','130'],
-        ['Bob Johnson', '30/07/23', 'Late','130','130','130'],
-    ]; 
-
+    }  
+       
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.UserName}>Counsellor</Text>
+                    <Text style={styles.UserName}>Counsellor: {name}</Text>
                 </View>
                 <View style={{justifyContent:'center'}}>
                     <Text style={{
                         justifyContent: 'center',
                         alignSelf: 'center',
-                        fontSize: 30,
+                        fontSize: 25,
                         // marginTop: 20,
                         fontWeight: 'bold',
                         color: 'black'
                     }}>Counselees</Text>
                 </View>
 
-                <View style={{flex: 1, padding: 16, paddingTop: 30}}>
+                <View style={{flex: 1, padding: 16, paddingTop: 10}}>
                     <Text style={{
                         justifyContent: 'center',
                         alignSelf: 'center',
-                        fontSize: 30,
+                        fontSize: 25,
                         marginTop: 10,
                         fontWeight: 'bold',
                         color: 'black'
@@ -70,60 +129,10 @@ const Home_C = ({navigation}) => {
                     <Table borderStyle={styles.border}>
                         <Row data={tableHead1} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
                         {/* TODO: Add ontouch */}
-                        {tableData1.map((rowData, index) => (
+                        {tableData3.map((rowData, index) => (
                             <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
                                 onPress={() => handleRowPress1(rowData)} />
                         ))}
-                    </Table>
-                </View>
-
-
-                <View style={{flex: 1, padding: 16, paddingTop: 30}}>
-                    <Text style={{
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        fontSize: 30,
-                        marginTop: 10,
-                        fontWeight: 'bold',
-                        color: 'black'
-                    }}>Third Year</Text>
-                    <Table borderStyle={styles.border}>
-                        <Row data={tableHead2} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                        {/* TODO: Add ontouch */}
-                        <Rows data={tableData2} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                    </Table>
-                </View>
-
-
-                <View style={{flex: 1, padding: 16, paddingTop: 30}}>
-                    <Text style={{
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        fontSize: 30,
-                        marginTop: 10,
-                        fontWeight: 'bold',
-                        color: 'black'
-                    }}>Fourth Year</Text>
-                    <Table borderStyle={styles.border}>
-                        <Row data={tableHead3} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                        {/* TODO: Add ontouch */}
-                        <Rows data={tableData3} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                    </Table>
-                </View>
-
-                <View style={{flex: 1, padding: 16, paddingTop: 30}}>
-                    <Text style={{
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        fontSize: 30,
-                        marginTop: 10,
-                        fontWeight: 'bold',
-                        color: 'black'
-                    }}>Passout</Text>
-                    <Table borderStyle={styles.border}>
-                        <Row data={tableHead4} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                        {/* TODO: Add ontouch */}
-                        <Rows data={tableData4} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
                     </Table>
                 </View>
             </ScrollView>
@@ -142,7 +151,7 @@ const styles = StyleSheet.create({
     UserName:{
         justifyContent: 'center',
         alignSelf: 'center',
-        fontSize: 50,
+        fontSize: 40,
         marginTop: 20,
         fontWeight: 'bold',
         color: 'black'
