@@ -2,6 +2,7 @@ import React,{useState,useContext} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import { AuthContext } from "../Authetication/Authprovider";
+import LinearGradient from "react-native-linear-gradient";
 
 const Add_Delete_C = () => {
     const colorScheme = useColorScheme();
@@ -10,6 +11,7 @@ const Add_Delete_C = () => {
     const { logout } = useContext(AuthContext)
 
     return(
+        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -64,6 +66,7 @@ const Add_Delete_C = () => {
                 </View>
             </ScrollView>
         </SafeAreaView>
+        </LinearGradient>
     )
 }
 

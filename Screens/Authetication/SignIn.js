@@ -74,7 +74,6 @@ const SignIn = ({navigation}) => {
                 />
             </View>
             
-
             <Text style={[styles.text_footer, {
                 color: colors.text,
                 marginTop: 35

@@ -9,8 +9,8 @@ const AuthStack = () => {
             <Stack.Screen 
               name='SignIn'
               component={SignIn}
+              options={{headerShown:false}}
             />
-            
         </Stack.Navigator>
     )
 }

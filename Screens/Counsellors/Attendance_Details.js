@@ -5,6 +5,7 @@ import {PieChart, LineChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Octicons'; // dot-fill
 import { Dimensions } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import LinearGradient from "react-native-linear-gradient";
 
 const Attendance_Details = () => {
     const colorScheme = useColorScheme();
@@ -62,6 +63,7 @@ const Attendance_Details = () => {
     const screenWidth = Dimensions.get("window").width;
 
     return(
+        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -90,16 +92,18 @@ const Attendance_Details = () => {
                         absolute
                     />
                 </View>
-                <View style={styles.container1}>                 
+                
+                {/* <View style={styles.container1}>                  */}
                     <Table borderStyle={styles.border}>
                         <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                         {/* TODO: Add ontouch (if necessary) */}
                         <Rows data={tableData} textStyle={styles.text}/>
                     </Table>
-                </View>
+                {/* </View> */}
     
             </ScrollView>
         </SafeAreaView>
+        </LinearGradient>
     )
 }
 

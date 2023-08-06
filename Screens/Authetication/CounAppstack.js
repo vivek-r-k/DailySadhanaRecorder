@@ -3,14 +3,16 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Home_C from '../Counsellors/Home_C';
-import Details_of_Counselee from '../Counsellors/Details_of_Counselee';
-import Attendance_Details from '../Counsellors/Attendance_Details';
+// import Home_C from '../Counsellors/Home_C';
+// import Details_of_Counselee from '../Counsellors/Details_of_Counselee';
+// import Attendance_Details from '../Counsellors/Attendance_Details';
 
-import Datewise from '../Counsellors/Datewise';
-import SingleDateData from '../Counsellors/SingleDateData';
+// import Datewise from '../Counsellors/Datewise';
+// import SingleDateData from '../Counsellors/SingleDateData';
 
-import Add_Delete_C from '../Counsellors/Add_Delete_C';
+// import Add_Delete_C from '../Counsellors/Add_Delete_C';
+
+import {Home_C_Navigator,Calendar,Profile} from './CustomNavigation_Coun'
 
 const CounAppStack = () => {
     return(
@@ -32,22 +34,25 @@ const CounAppStack = () => {
                   // You can return any component that you like here!
                   return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
                 },
-                tabBarActiveTintColor: '#171F1D',
-                tabBarInactiveTintColor: 'gray',
+                tabBarActiveTintColor: '#000000',
+                tabBarInactiveTintColor: '#ffffff',
                 tabBarShowLabel: false, 
                 headerShown: false,
+                tabBarStyle: {
+                  backgroundColor: '#2596be', // Add your desired background color here
+                },
               })
         }>
             <Tab.Screen 
-            name="Home_C" component={Home_C}
+            name="Home_C" component={Home_C_Navigator}
             />
             <Tab.Screen 
             name="Datewise" 
-            component={Datewise}
+            component={Calendar}
             />
             <Tab.Screen 
             name="Add_Delete_C" 
-            component={Add_Delete_C}
+            component={Profile}
             />
           </Tab.Navigator>
     )

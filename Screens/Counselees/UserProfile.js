@@ -5,6 +5,7 @@ import {PieChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Dimensions } from "react-native";
 import { AuthContext } from "../Authetication/Authprovider";
+import LinearGradient from "react-native-linear-gradient";
 
 const UserProfile = () => {
     const colorScheme = useColorScheme();
@@ -51,6 +52,7 @@ const UserProfile = () => {
     const screenWidth = Dimensions.get("window").width;
 
     return(
+        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -114,6 +116,7 @@ const UserProfile = () => {
                 </View>
             </ScrollView>
         </SafeAreaView>
+        </LinearGradient>
     )
 }
 

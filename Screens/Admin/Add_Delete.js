@@ -1,13 +1,15 @@
 import React,{useState,useContext} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
 import { AuthContext } from "../Authetication/Authprovider";
+import LinearGradient from "react-native-linear-gradient";
 
-const Add_Delete = () => {
+const Add_Delete = ({navigation}) => {
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const {register,logout} = useContext(AuthContext)
 
     return(
+        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -54,6 +56,7 @@ const Add_Delete = () => {
                 </View>
             </ScrollView>
         </SafeAreaView>
+        </LinearGradient>
     )
 }
 

@@ -1,8 +1,10 @@
 import React,{useState} from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, useColorScheme,Pressable } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, useColorScheme,Alert, TouchableOpacity } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import LinearGradient from "react-native-linear-gradient";
 
-const Home_C = () => {
+const Home_C = ({navigation}) => {
+    // onPress={() => navigation.navigate('Details_of_Counselee')}
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
 
@@ -12,6 +14,10 @@ const Home_C = () => {
         ['Suryapati achyuta das', '30/07/23', 'Absent','130','130','130'],
         ['Bob Johnson', '30/07/23', 'Late','130','130','130'],
     ];
+    const handleRowPress1 = (rowData) => {
+        Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
+        // navigation.navigate('')
+    }
 
     const tableHead2 = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
     const tableData2 = [
@@ -32,9 +38,10 @@ const Home_C = () => {
         ['Pankaj Meena', '30/07/23', 'Present', '130','130','130'],
         ['Suryapati achyuta das', '30/07/23', 'Absent','130','130','130'],
         ['Bob Johnson', '30/07/23', 'Late','130','130','130'],
-    ];
+    ]; 
 
     return(
+        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -63,7 +70,10 @@ const Home_C = () => {
                     <Table borderStyle={styles.border}>
                         <Row data={tableHead1} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
                         {/* TODO: Add ontouch */}
-                        <Rows data={tableData1} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
+                        {tableData1.map((rowData, index) => (
+                            <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
+                                onPress={() => handleRowPress1(rowData)} />
+                        ))}
                     </Table>
                 </View>
 
@@ -118,6 +128,7 @@ const Home_C = () => {
                 </View>
             </ScrollView>
         </SafeAreaView>
+        </LinearGradient>
     )
 }
 

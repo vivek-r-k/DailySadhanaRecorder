@@ -5,6 +5,7 @@ import {PieChart, LineChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Octicons'; // dot-fill
 import { Dimensions } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import LinearGradient from "react-native-linear-gradient";
 
 const SingleDateData = () => {
     const colorScheme = useColorScheme();
@@ -29,6 +30,7 @@ const SingleDateData = () => {
     // similarly TODO: add for third, fourth and passout
 
     return(
+        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -46,9 +48,9 @@ const SingleDateData = () => {
                         <Rows data={tableData2} textStyle={styles.text}/>
                     </Table>
                 </View>
-    
             </ScrollView>
         </SafeAreaView>
+        </LinearGradient>
     )
 }
 

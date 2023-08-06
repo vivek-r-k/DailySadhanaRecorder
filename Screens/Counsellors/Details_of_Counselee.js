@@ -4,6 +4,7 @@ import {Picker} from '@react-native-picker/picker';
 import {PieChart, LineChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Dimensions } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
 
 const Details_of_Counselee = () => {
     const colorScheme = useColorScheme();
@@ -86,6 +87,7 @@ const Details_of_Counselee = () => {
     const screenWidth = Dimensions.get("window").width;
 
     return(
+      <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -177,6 +179,7 @@ const Details_of_Counselee = () => {
 
             </ScrollView>
         </SafeAreaView>
+        </LinearGradient>
     )
 }
 

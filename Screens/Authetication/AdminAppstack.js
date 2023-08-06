@@ -3,8 +3,28 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import {createNativeStackNavigator} from '@react-navigation/native-stack'
+const Stack = createNativeStackNavigator();
+
 import Home_A from '../Admin/Home_A';
 import Add_Delete from '../Admin/Add_Delete';
+
+const ADD = () => {
+  return(
+      <Stack.Navigator>
+          <Stack.Screen 
+              name="Add_Delete"
+              component={Add_Delete}
+            options={{headerShown:false}}
+          />
+          <Stack.Screen
+              name="Home_A"
+              component={Home_A}
+            options={{headerShown:false}}
+          />
+      </Stack.Navigator>
+  )
+}
 
 const AdminAppStack = () => {
     return(
@@ -20,44 +40,26 @@ const AdminAppStack = () => {
                   else if (route.name === 'Add_Delete') {
                     iconName = focused ? 'account-multiple-plus' : 'account-multiple-plus-outline';
                   }
-                  // else if (route.name === 'Mentor') {
-                  //   iconName = focused ? 'md-person' : 'md-person-outline';
-                  // }
-                  // else if (route.name === 'Schedule') {
-                  //   iconName = focused ? 'videocam' : 'videocam-outline';
-                  // }
-                  // // else if (route.name === 'Countdown') {
-                  // //   iconName = focused ? 'md-timer' : 'md-timer-outline';
-                  // // }
-      
                   // You can return any component that you like here!
                   return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
                 },
-                tabBarActiveTintColor: '#171F1D',
-                tabBarInactiveTintColor: 'gray',
+                tabBarActiveTintColor: '#000000',
+                tabBarInactiveTintColor: '#ffffff',
                 tabBarShowLabel: false, 
                 headerShown: false,
+                tabBarStyle: {
+                  backgroundColor: '#2596be', // Add your desired background color here
+                },
               })
-        }>
+        }
+        >
             <Tab.Screen 
             name="Home_A" component={Home_A}
             />
             <Tab.Screen 
             name="Add_Delete" 
-            component={Add_Delete}
+            component={ADD}
             />
-            {/* <Tab.Screen 
-            name="Mentor" 
-            component={Mentor}
-            />
-            <Tab.Screen 
-            name="Team" component={Team}
-            /> */}
-            {/* <Tab.Screen 
-            name="Countdown" component={Countdown} 
-            // options={{
-            //
-            /> */}
           </Tab.Navigator>
     )
 }
