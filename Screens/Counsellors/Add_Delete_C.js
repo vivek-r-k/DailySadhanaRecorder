@@ -1,21 +1,73 @@
-import React,{useState,useContext} from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
+import React,{useState,useContext,useEffect} from "react";
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, useColorScheme, TouchableOpacity } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import { AuthContext } from "../Authetication/Authprovider";
 import LinearGradient from "react-native-linear-gradient";
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 
 const Add_Delete_C = () => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
-    const [batch, setBatch] = useState("");
     const { logout } = useContext(AuthContext)
+    
+    // Below is for getting the name
+    const currentUser = auth().currentUser;
+    const [name1,setName1] = useState('')
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref('/Admin/Counsellors/');
+          Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log("line 19:",data);
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                  const user = data[key];
+                  if (user.Email === currentUser.email) {
+                    setName1(key);
+                    // console.log("line27: ",key);
+                    break; // Exit the loop once the matching user is found
+                  }
+                }
+              }
+            });
+            // console.log("(line 33)name: ",name1);  
+        };
+        fetchData(); // Call the async function
+    }, []);
+
+    const [name,setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [batch, setBatch] = useState("");
+    const handleAdd = () => {
+        if(name === "" || email === "" || password === "" || batch === ""){
+            Alert.alert("Please fill all the fields");
+        }
+        else{
+        database()
+          .ref(`/Admin/Counsellors/${name1}/Batch/${batch}/`)
+          .update({
+            [name]: { Email: email, Password: password }
+          })
+          .then(() => 
+          {
+            Alert.alert(`Name: ${name}, Email: ${email} and Password: ${password} for ${batch} is added!`)
+            setName("");
+            setEmail("")
+            setPassword("")
+            setBatch("")
+          }
+          );
+        }     
+    };
 
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.UserName}>Counsellor</Text>
+                    <Text style={styles.UserName}>Counsellor {name1}</Text>
                 </View>
                 <View style={{justifyContent:'center'}}>
                     <Text style={{
@@ -29,7 +81,7 @@ const Add_Delete_C = () => {
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Full Name:</Text>
-                    <TextInput style={styles.input} />
+                    <TextInput style={styles.input} defaultValue={name} onChangeText={(userName) => setName(userName)}/>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Batch: </Text>
@@ -39,23 +91,29 @@ const Add_Delete_C = () => {
                         style={styles.picker}
                         onValueChange={(itemValue, itemIndex) => setBatch(itemValue)}
                     >
-                        <Picker.Item label="Second Year" value="Second Year" />
-                        <Picker.Item label="Third Year" value="Third Year" />
-                        <Picker.Item label="Fourth Year" value="Fourth Year" />
+                        <Picker.Item label="Choose" value="" enabled={false}/>
+                        <Picker.Item label="Second Year" value="SecondYear" />
+                        <Picker.Item label="Third Year" value="ThirdYear" />
+                        <Picker.Item label="Fourth Year" value="FourthYear" />
                         <Picker.Item label="Passout" value="Passout" />
                     </Picker>
                     </View>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Email ID: </Text>
-                    <TextInput style={styles.input} />
+                    <TextInput style={styles.input} defaultValue={email} autoCapitalize="none" onChangeText={(userEmail) => setEmail(userEmail)}/>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Password: </Text>
-                    <TextInput style={styles.input} />
+                    <TextInput style={styles.input} 
+                        autoCapitalize="none"
+                        onChangeText={(userPassword) => setPassword(userPassword)}
+                        autoCorrect={false}
+                        defaultValue={password}
+                    />
                 </View>
                 <View style={{margin: "3%"}}>
-                    <TouchableOpacity style={styles.button} onPress={() => {}}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleAdd()}>
                         <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>ADD</Text>
                     </TouchableOpacity>
                 </View>
@@ -87,7 +145,7 @@ const styles = StyleSheet.create({
     UserName:{
         justifyContent: 'center',
         alignSelf: 'center',
-        fontSize: 50,
+        fontSize: 40,
         marginTop: 20,
         fontWeight: 'bold',
         color: 'black'

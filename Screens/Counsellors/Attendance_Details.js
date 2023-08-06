@@ -7,7 +7,7 @@ import { Dimensions } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import LinearGradient from "react-native-linear-gradient";
 
-const Attendance_Details = () => {
+const Attendance_Details = ({route}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const [attendance, setAttendance] = useState("");
@@ -22,7 +22,7 @@ const Attendance_Details = () => {
         ['29/07/23', 'Absent'],
         ['28/07/23', 'Late'],
     ];
-
+    // console.log("in",route.params.name);
     // dummy data for piechart
     const data = [
         {
@@ -67,7 +67,7 @@ const Attendance_Details = () => {
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.UserName}>ABC</Text>
+                    <Text style={styles.UserName}>{route.params.name}</Text>
                 </View>
 
                 <View>

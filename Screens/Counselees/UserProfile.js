@@ -1,4 +1,4 @@
-import React,{useState,useContext} from "react";
+import React,{useState,useContext,useEffect} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import {PieChart} from 'react-native-chart-kit'
@@ -7,8 +7,58 @@ import { Dimensions } from "react-native";
 import { AuthContext } from "../Authetication/Authprovider";
 import LinearGradient from "react-native-linear-gradient";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 
 const UserProfile = () => {
+
+    // Below is for getting the name
+    // const currentUser = auth().currentUser;
+    // const [name1,setName1] = useState('')
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         // TODO: brainstorm for '/Admin/Counsellors/.......'
+    //       const Test = database().ref('/Admin/Counsellors/');
+    //       Test.on('value', snapshot => {
+    //         const data = snapshot.val();
+    //         // console.log("line 19:",data);
+    //         for (const key in data) {
+    //             if (data.hasOwnProperty(key)) {
+    //               const user = data[key];
+    //               if (user.Email === currentUser.email) {
+    //                 setName1(key);
+    //                 console.log("line27: ",key);
+    //                 break; // Exit the loop once the matching user is found
+    //               }
+    //             }
+    //           }
+    //         });
+    //         console.log("(line 33)name: ",name1);  
+    //     };
+    //     fetchData(); // Call the async function
+    // }, []);
+
+    // const handleAdd = () => {
+    //     if(name === "" || email === "" || password === ""){
+    //         Alert.alert("Please fill all the fields");
+    //     }
+    //     else{
+    //     database()
+    //       .ref('/Admin/Counsellors')
+    //       .update({
+    //         [name]: { Email: email, Password: password }
+    //       })
+    //       .then(() => 
+    //       {
+    //         Alert.alert(`Name: ${name}, Email: ${email} and Password: ${password} is added!`)
+    //         // setName("");
+    //         // setEmail("")
+    //         // setPassword("")
+    //       }
+    //       );
+    //     }     
+    // };
+
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const [attendance, setAttendance] = useState("");

@@ -10,7 +10,7 @@ const Add_Delete = ({navigation}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const {register,logout} = useContext(AuthContext)
-
+ 
     const handleAdd = () => {
         if(name === "" || email === "" || password === ""){
             Alert.alert("Please fill all the fields");

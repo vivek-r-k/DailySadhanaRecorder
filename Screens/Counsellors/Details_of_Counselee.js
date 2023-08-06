@@ -6,11 +6,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Dimensions } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-const Details_of_Counselee = () => {
+const Details_of_Counselee = ({navigation,route}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const [attendance, setAttendance] = useState("");
 
+    // console.log(route.params.data[0]);
     // dummy data for piechart
     const data = [
         {
@@ -91,7 +92,7 @@ const Details_of_Counselee = () => {
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.UserName}>ABC</Text>
+                    <Text style={styles.UserName}>{route.params.data[0]}</Text>
                 </View>
 
                 <View>
@@ -104,6 +105,7 @@ const Details_of_Counselee = () => {
                         fontWeight:"bold",
                         color:'#000000'
                     }}>Last 30 days attendance</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('Attendance_Details',{name: route.params.data[0]})}>
                     <PieChart
                         data={data}
                         width={screenWidth}
@@ -115,6 +117,7 @@ const Details_of_Counselee = () => {
                         center={[30,5]}
                         absolute
                     />
+                    </TouchableOpacity>
                 </View>
                 
                 <View style={{marginTop: '3%'}}>

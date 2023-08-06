@@ -8,8 +8,6 @@ import auth from '@react-native-firebase/auth';
 const Home_C = ({navigation}) => {
     // Below is for getting the name
     const currentUser = auth().currentUser;
-    // console.log("currentUser.email: ",currentUser.email);
-
     const [name,setName] = useState('')
     useEffect(() => {
         const fetchData = async () => {
@@ -53,15 +51,9 @@ const Home_C = ({navigation}) => {
         fetchData(); // Call the async function
     }, []);
 
-    const tableHead1 = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
-    const tableData1 = [
-        ['Anu', '06/08/23', 'Present', '13:00','130','130'],
-        ['Pankaj', '06/08/23', 'Absent','15:30','130','130'],
-        ['Rakshit', '06/08/23', 'Late','11:10','130','130'],
-    ];
-
+    const tableHead = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
     // ----------------------------Get from database for table 1---------------------------- \\
-    const [tableData3,setTableData3] = useState([])  
+    const [tableData1,setTableData1] = useState([])  
     useEffect(() => {
         const fetchData = async () => {
           const Test = database().ref(`/Counsellor/${name}/${when}/SecondYear/`);
@@ -77,16 +69,15 @@ const Home_C = ({navigation}) => {
           const snapshot = await snapshotPromise;
       
           const data = snapshot.val();
-          const currentDate = new Date().toLocaleDateString();
       
           const tableData = Object.keys(data).map((name) => {
             const { Attendance, Chanting, Hearing, Reading } = data[name];
-            return [name, currentDate, Attendance, Chanting, Hearing.toString(), Reading.toString()];
+            return [name, when, Attendance, Chanting, Hearing.toString(), Reading.toString()];
           });
       
-          setTableData3(tableData)
+          setTableData1(tableData)
         //   console.log("line 88", tableData);  
-          console.log("line 89", tableData3);  
+        //   console.log("line 89", tableData3);  
         };
         
         fetchData(); // Call the async function
@@ -94,11 +85,43 @@ const Home_C = ({navigation}) => {
       
     // -------------------End of getting from database for table 1------------------------- \\
 
+    // ----------------------------Get from database for table 2---------------------------- \\
+    // const [tableData2,setTableData2] = useState([])  
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //       const Test = database().ref(`/Counsellor/${name}/${when}/ThirdYear/`);
+      
+    //       // Wrap the event listener in a Promise
+    //       const snapshotPromise = new Promise((resolve) => {
+    //         Test.on('value', (snapshot) => {
+    //           resolve(snapshot);
+    //         });
+    //       });
+      
+    //       // Wait for the Promise to resolve
+    //       const snapshot = await snapshotPromise;
+      
+    //       const data = snapshot.val();
+    //   console.log("line105:",data);
+    //       const tableData = Object.keys(data).map((name) => {
+    //         const { Attendance, Chanting, Hearing, Reading } = data[name];
+    //         return [name, when, Attendance, Chanting, Hearing.toString(), Reading.toString()];
+    //       });
+      
+    //       setTableData2(tableData)
+    //     //   console.log("line 88", tableData);  
+    //       console.log("line 113", tableData2);  
+    //     };
+        
+    //     fetchData(); // Call the async function
+    //   }, []);
+      
+    // -------------------End of getting from database for table ------------------------- \\
+
     const handleRowPress1 = (rowData) => {
-        Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
-        // navigation.navigate('')
-    }  
-       
+        // Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
+        navigation.navigate('Details_of_Counselee',{data: rowData})
+    }    
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
@@ -115,7 +138,7 @@ const Home_C = ({navigation}) => {
                         fontWeight: 'bold',
                         color: 'black'
                     }}>Counselees</Text>
-                </View>
+                </View>   
 
                 <View style={{flex: 1, padding: 16, paddingTop: 10}}>
                     <Text style={{
@@ -127,14 +150,31 @@ const Home_C = ({navigation}) => {
                         color: 'black'
                     }}>Second Year</Text>
                     <Table borderStyle={styles.border}>
-                        <Row data={tableHead1} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                        {/* TODO: Add ontouch */}
-                        {tableData3.map((rowData, index) => (
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
+                        {tableData1.map((rowData, index) => (
                             <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
                                 onPress={() => handleRowPress1(rowData)} />
                         ))}
                     </Table>
                 </View>
+
+                {/* <View style={{flex: 1, padding: 16, paddingTop: 10}}>
+                    <Text style={{
+                        justifyContent: 'center',
+                        alignSelf: 'center',
+                        fontSize: 25,
+                        marginTop: 10,
+                        fontWeight: 'bold',     
+                        color: 'black'
+                    }}>Third Year</Text>
+                    <Table borderStyle={styles.border}>
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
+                        {tableData2.map((rowData, index) => (
+                            <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
+                                onPress={() => handleRowPress1(rowData)} />
+                        ))}
+                    </Table>
+                </View> */}  
             </ScrollView>
         </SafeAreaView>
         </LinearGradient>

@@ -7,7 +7,7 @@ import { Dimensions } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import LinearGradient from "react-native-linear-gradient";
 
-const SingleDateData = () => {
+const SingleDateData = ({route}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const [attendance, setAttendance] = useState("");
@@ -15,6 +15,8 @@ const SingleDateData = () => {
     const greenDot = <Icon name="dot-fill" size={18} color="green" />;
     const redDot = <Icon name="dot-fill" size={18} color="red" />;
     const yellowDot = <Icon name="dot-fill" size={18} color="yellow" />;
+
+    // console.log("single",route.params.date); 
 
     // second year
     const tableHead2 = ['Counselee','Attendance','Chanting', 'Hearing','Reading',];
@@ -34,7 +36,7 @@ const SingleDateData = () => {
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.UserName}>Details of 30/07/2023</Text> 
+                    <Text style={styles.UserName}>Details of {route.params.date}</Text> 
                     {/* TODO: change the date to onclicked date */}
                 </View>
                 <View style={styles.container1}>                 

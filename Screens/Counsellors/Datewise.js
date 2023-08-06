@@ -1,17 +1,10 @@
 import React,{useState} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, useColorScheme,FlatList, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 
-const Datewise = () => {
+const Datewise = ({navigation}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
-
-    const navigate = useNavigation();
-
-    const goToSignleDateScreen = () => {
-        navigation.navigate('SingleDateData');
-    };
 
     const getLast30DaysDates = () => {
         const today = new Date();
@@ -34,8 +27,9 @@ const Datewise = () => {
     const datesArray = getLast30DaysDates();
 
     const renderItem = ({ item }) => {
+        // console.log("datewise: ",item);
         return (
-          <TouchableOpacity style={styles.dateItem} onPress={() => console.log('Pressed:', item)}>
+          <TouchableOpacity style={styles.dateItem} onPress={() => navigation.navigate('SingleDateData',{date:item})}>
             <Text style={{
                 justifyContent: 'center',
                 alignSelf: 'flex-start',
@@ -44,6 +38,7 @@ const Datewise = () => {
                 fontWeight: 'bold',
                 color: 'black'
             }}>{item}
+            {/* {console.log(item)} */}
                 <View style={styles.separator} />
             </Text>
           </TouchableOpacity>
