@@ -13,6 +13,7 @@ import UserProfile from '../Counselees/UserProfile';
 import AdminAppStack from './AdminAppstack';
 import CounAppStack from './CounAppstack';
 // import AppStack from './AppStack';
+import database from '@react-native-firebase/database';
 
 const Routes = () => {
   const {user, setUser} = useContext(AuthContext);
@@ -30,7 +31,31 @@ const Routes = () => {
 
   if (initializing) return null;
 
+  // TODO: change the below one
   const CounsellorEmails = ["vivekanandrkumachagi@gmail.com", "vivekanandrk2001@gmail.com"] 
+  // const [counsellorEmails, setCounsellorEmails] = useState([]);
+  //       useEffect(() => {
+  //       const fetchData = async () => {
+  //       const Test = database().ref('/Admin/Counsellors/')
+  //       Test.on('value', snapshot => {
+  //           const data = snapshot.val();
+  //           console.log("line 47: ",typeof(data));
+  //           const filteredEmails = Object.values(data)
+  //           .filter(item => !item.Admin) // Excludes items with Admin: true
+  //           .map(item => item.Email);
+      
+  //         // Update the state with the filtered email values
+  //         setCounsellorEmails(filteredEmails);
+  //         console.log("line 53: ",counsellorEmails);
+  //       });
+  //       };
+  //       fetchData(); // Call the async function 
+
+  //       return () => {
+  //       const Test = database().ref('/Admin/');
+  //       Test.off();
+  //       };
+  //   }, []);
 
   return (
     <NavigationContainer>

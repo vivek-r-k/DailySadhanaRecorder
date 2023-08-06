@@ -12,46 +12,55 @@ const Home_A = ({navigation}) => {
     const { colors } = useTheme();
 
     const tableHead = ['Counsellors'];
-    const tableData1 = [['John Doe'],['Jane Smith'],['Bob Johnson']];
+    // const tableData1 = [['John Doe'],['Jane Smith'],['Bob Johnson']];
+    const [tableData2,setTableData2] = useState([])
 
     const [adminName, setAdminName] = useState('');
+    
     useEffect(() => {
-        const fetchAdminData = async () => {
-          try {
-            const snapshot = await database()
-              .ref('/users/Admin/Name')
-              .once('value');
-    
-            const name = snapshot.val();
-            setAdminName(name);
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          }
+        const fetchData = async () => {
+          const Test = database().ref('/Admin/Counsellors/');
+          Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log(data);
+      
+            // Extract the names from the data object and filter out "Admin" names
+            const names = Object.keys(data).filter(name => !data[name].Admin);
+      
+            // Convert names into the desired format [['Vivek'], ['Ani'], ['Harsh']]
+            const formattedNames = names.map((name) => [name]);
+      
+            // Set the formatted names in the tableData1 state
+            setTableData2(formattedNames);
+          });
         };
-    
-        fetchAdminData();
+        fetchData(); // Call the async function
       }, []);
 
-    // const userDocument = firestore().collection('Users').doc('ABC');
-    // const handleRowPress1 = async (rowData) => {
-    //     const adminRef = database().ref('/users/Admin'); // Get a reference to the 'Admin' path
-
-    //     // Set the new data under the 'Admin' path
-    //     adminRef
-    //     .set({
-    //         Name: 'Harsh',
-    //         Email: 'harsh@gmail.com',
-    //     })
-    //     .then(() => {
-    //         console.log('Data updated.');
-    //         Alert.alert('Row Pressed', 'New data added successfully.');
-    //     })
-    //     .catch((error) => {
-    //         console.error('Error updating data:', error);
-    //         Alert.alert('Error', 'Failed to add new data.');
-    //     });
-    //   };
-      
+    const handleRowPress = (row) => {
+        // Show a confirm delete dialog using Alert
+        Alert.alert(
+          'Confirm Delete',
+          `Are you sure you want to remove ${row[0]}?`,
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+            {
+              text: 'Delete',
+              style: 'destructive',
+              onPress: () => {
+                // Perform delete operation here
+                const counsellorsRef = database().ref('/Admin/Counsellors');
+                counsellorsRef.child(row[0]).remove();
+                console.log('Item deleted successfully.');
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      };
 
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
@@ -64,9 +73,11 @@ const Home_A = ({navigation}) => {
                     <View style={styles.container1}>
                         <Table borderStyle={styles.border}>
                             <Row data={tableHead} style={styles.head} textStyle={styles.text} />
-                            {tableData1.map((rowData, index) => (
+                            {tableData2.map((rowData, index) => (
                             <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
-                                onPress={() => handleRowPress1(rowData)} />
+                                onPress={() => handleRowPress(rowData)} 
+                                // onPress={() => {console.log(rowData)}} 
+                                />
                         ))}
                         </Table>
                     </View>

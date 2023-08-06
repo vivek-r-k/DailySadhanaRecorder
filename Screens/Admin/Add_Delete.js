@@ -1,12 +1,30 @@
-import React,{useState,useContext} from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
+import React,{useState,useContext, useEffect} from "react";
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity, Alert } from "react-native";
 import { AuthContext } from "../Authetication/Authprovider";
 import LinearGradient from "react-native-linear-gradient";
+import database from '@react-native-firebase/database';
 
 const Add_Delete = ({navigation}) => {
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [name,setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const {register,logout} = useContext(AuthContext)
+
+    const handleAdd = () => {
+        database()
+          .ref('/Admin/Counsellors')
+          .update({
+            [name]: { Email: email, Password: password }
+          })
+          .then(() => 
+          {
+            Alert.alert(`Name: ${name}, Email: ${email} and Password: ${password} is added!`)
+            setName("");
+            setEmail("")
+            setPassword("")
+          }
+          );
+      };
 
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
@@ -27,11 +45,11 @@ const Add_Delete = ({navigation}) => {
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Full Name:</Text>
-                    <TextInput style={styles.input}/>
+                    <TextInput style={styles.input} defaultValue={name} onChangeText={(userName) => setName(userName)}/>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Email ID: </Text>
-                    <TextInput style={styles.input} onChangeText={(userEmail) => setEmail(userEmail)}/>
+                    <TextInput style={styles.input} defaultValue={email} autoCapitalize="none" onChangeText={(userEmail) => setEmail(userEmail)}/>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Password: </Text>
@@ -39,12 +57,13 @@ const Add_Delete = ({navigation}) => {
                         autoCapitalize="none"
                         onChangeText={(userPassword) => setPassword(userPassword)}
                         autoCorrect={false}
+                        defaultValue={password}
                     />
                 </View>
                 <View style={{margin: "3%"}}>
                     <TouchableOpacity 
                         style={styles.button} 
-                        onPress={() => register(email, password)}
+                        onPress={() => handleAdd()}
                     >
                         <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>ADD</Text>
                     </TouchableOpacity>

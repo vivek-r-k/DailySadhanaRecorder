@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, useContext, useState,useEffect} from 'react';
 import { 
     View, 
     Text, 
@@ -15,6 +15,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';// praying-hands
+import database from '@react-native-firebase/database';
 
 import { useTheme } from 'react-native-paper';
 
@@ -23,7 +24,7 @@ import { AuthContext } from './Authprovider';
 const SignIn = ({navigation}) => {
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
-    const {login} = useContext(AuthContext)
+    const {login,register} = useContext(AuthContext)
     const { colors } = useTheme();
     
     const resetPassword = () => {
@@ -41,6 +42,51 @@ const SignIn = ({navigation}) => {
             Alert.alert("Please enter valid email id and then try!")
         }
     }
+
+    const [counsellorData, setCounsellorData] = useState({});
+    useEffect(() => {
+        const fetchData = async () => {
+        const Test = database().ref('/Admin/');
+        Test.on('value', snapshot => {
+            const data = snapshot.val();
+            const counsellors = data?.Counsellors; // Access the "Counsellors" object
+            console.log("line 54: ",counsellors);
+
+            // Check if the "Counsellors" object exists
+            if (counsellors) {
+            setCounsellorData(counsellors); // Update the state with the "Counsellors" object
+            }
+            // console.log(typeof(counsellorData))
+        });
+        };
+        fetchData(); // Call the async function
+
+        return () => {
+        const Test = database().ref('/Admin/');
+        Test.off();
+        };
+    }, []);
+
+    // TODO: if any login or signup issues then the code is here
+    const handleLogIn = (email, password) => {
+        // Loop through the counsellorData object
+        for (const counselorName in counsellorData) {
+          if (
+            counsellorData[counselorName].Email === email &&
+            counsellorData[counselorName].Password === password
+          ) {
+            try {
+              register(email, password);
+              return;
+            } catch (error) {
+              console.error("Error occurred during registration:", error);
+              return;
+            }
+          }
+        }
+        login(email,password)
+        // console.log("Invalid email or password");
+      };
 
     return (
       <View style={styles.container}>
@@ -100,7 +146,7 @@ const SignIn = ({navigation}) => {
             <View style={styles.button}>
                 <TouchableOpacity
                     style={styles.signIn}
-                    onPress={() => login(email,password)}
+                    onPress={() => handleLogIn(email,password)}
                     
                 >
                 <LinearGradient

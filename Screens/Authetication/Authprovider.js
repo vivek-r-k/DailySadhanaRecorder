@@ -29,7 +29,8 @@ export const AuthProvider = ({children}) => {
               })
             //we need to catch the whole sign up process if it fails too.
             .catch(error => {
-                console.log('Something went wrong with sign up: ', error);
+              auth().signInWithEmailAndPassword(email, password);
+                // console.log('Something went wrong with sign up: ', error);
             });
           } catch (e) {
             // console.log(e);
