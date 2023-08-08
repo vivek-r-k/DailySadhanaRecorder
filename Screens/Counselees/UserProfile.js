@@ -30,7 +30,7 @@ const UserProfile = () => {
                 break;
               }
             }
-            console.log("Vivek Data:", vivekData);
+            // console.log("Vivek Data:", vivekData);
           });
         };
         fetchData(); // Call the async function

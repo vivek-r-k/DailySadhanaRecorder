@@ -8,120 +8,88 @@ import auth from '@react-native-firebase/auth';
 const Home_C = ({navigation}) => {
     // Below is for getting the name
     const currentUser = auth().currentUser;
+    var modifiedEmail = currentUser.email.replace(/\./g, '_');
+    // console.log("line 12:",modifiedEmail);
     const [name,setName] = useState('')
     useEffect(() => {
         const fetchData = async () => {
-          const Test = database().ref('/Admin/Counsellors/');
-          Test.on('value', snapshot => {
+        const Test = database().ref('/Admin/Counsellors/');
+        Test.on('value', snapshot => {
             const data = snapshot.val();
-            // console.log("line 19:",data);
-            for (const key in data) {  
-                if (data.hasOwnProperty(key)) {
-                  const user = data[key];
-                  if (user.Email === currentUser.email) {
-                    setName(key);
-                    // console.log("line25: ",key);
-                    break; // Exit the loop once the matching user is found
-                  }
-                }
-              }
-            });
-            // console.log("(line 28)name: ",name); 
+            // console.log("line 19:",data[modifiedEmail].Name); 
+            setName(data[modifiedEmail].Name)
+        });
         };
         fetchData(); // Call the async function
-    }, []);
 
-    // Below is for getting latest entered date
-    const [when,setWhen] = useState('')
-    useEffect(() => {
-        const fetchData = async () => {
-          const Test = database().ref(`/Counsellor/${name}/`);
-          Test.on('value', snapshot => {
-            const data = snapshot.val();
-            // console.log("line 43:",data);
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    setWhen(key)
-                //   console.log("line 47: ",key); 
-                } 
-              }
-            });
-            // console.log("(line 51)when: ",when); 
+        return () => {
+        const Test = database().ref('/Admin/Counsellors/');
+        Test.off();
         };
-        fetchData(); // Call the async function
     }, []);
-
+    
     const tableHead = ['Counselees', 'Date', 'Attendance', 'Chanting', 'Hearing', 'Reading'];
     // ----------------------------Get from database for table 1---------------------------- \\
-    const [tableData1,setTableData1] = useState([])  
+    const [tableData1, setTableData1] = useState([]);
     useEffect(() => {
-        const fetchData = async () => {
-          const Test = database().ref(`/Counsellor/${name}/${when}/SecondYear/`);
-      
-          // Wrap the event listener in a Promise
-          const snapshotPromise = new Promise((resolve) => {
+    const fetchData = async () => {
+        try {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Second_Year/Emails/`);
+
+        // Wrap the event listener in a Promise
+        const snapshotPromise = new Promise((resolve) => {
             Test.on('value', (snapshot) => {
-              resolve(snapshot);
+            resolve(snapshot);
             });
-          });
-      
-          // Wait for the Promise to resolve
-          const snapshot = await snapshotPromise;
-      
-          const data = snapshot.val();
-      
-          const tableData = Object.keys(data).map((name) => {
-            const { Attendance, Chanting, Hearing, Reading } = data[name];
-            return [name, when, Attendance, Chanting, Hearing.toString(), Reading.toString()];
-          });
-      
-          setTableData1(tableData)
-        //   console.log("line 88", tableData);  
-        //   console.log("line 89", tableData3);  
-        };
-        
-        fetchData(); // Call the async function
-      }, []);
-      
-    // -------------------End of getting from database for table 1------------------------- \\
+        }); 
 
-    // ----------------------------Get from database for table 2---------------------------- \\
-    // const [tableData2,setTableData2] = useState([])  
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //       const Test = database().ref(`/Counsellor/${name}/${when}/ThirdYear/`);
-      
-    //       // Wrap the event listener in a Promise
-    //       const snapshotPromise = new Promise((resolve) => {
-    //         Test.on('value', (snapshot) => {
-    //           resolve(snapshot);
-    //         });
-    //       });
-      
-    //       // Wait for the Promise to resolve
-    //       const snapshot = await snapshotPromise;
-      
-    //       const data = snapshot.val();
-    //   console.log("line105:",data);
-    //       const tableData = Object.keys(data).map((name) => {
-    //         const { Attendance, Chanting, Hearing, Reading } = data[name];
-    //         return [name, when, Attendance, Chanting, Hearing.toString(), Reading.toString()];
-    //       });
-      
-    //       setTableData2(tableData)
-    //     //   console.log("line 88", tableData);  
-    //       console.log("line 113", tableData2);  
-    //     };
-        
-    //     fetchData(); // Call the async function
-    //   }, []);
-      
-    // -------------------End of getting from database for table ------------------------- \\
+        // Wait for the Promise to resolve
+        const snapshot = await snapshotPromise;
 
+        const data = snapshot.val();
+        // console.log("line 49:", data);
+
+        if (data) {
+            const resultArray = [];
+
+            for (const key in data) {
+            const userData = data[key];
+            const datesArray = Object.keys(userData.Dates).sort();
+            const lastDate = datesArray[datesArray.length - 1];
+            const lastObject = userData.Dates[lastDate];
+            
+            const valuesArray = [
+                userData.Name,
+                lastDate,
+                lastObject.Attendance,
+                lastObject.Chanting,
+                lastObject.Hearing.toString(),
+                lastObject.Reading.toString()
+            ];
+
+            resultArray.push(valuesArray);
+            }
+
+            // console.log("line 56:", resultArray);
+
+            setTableData1(resultArray); // Update state with processed values
+        } else {
+            console.log("No data found.");
+        }
+        } catch (error) {
+        console.error('Error fetching data:', error);
+        }
+    };
+    
+    fetchData(); // Call the async function
+    }, []);
+      
     const handleRowPress1 = (rowData) => {
         // Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
-        navigation.navigate('Details_of_Counselee',{data: rowData})
-    }    
+        navigation.navigate('Details_of_Counselee',{data: rowData,counsellorEmail: modifiedEmail,batch:"Second_Year"})
+    }     
+    // -------------------End of getting from database for table 1------------------------- \\
+    
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
@@ -151,10 +119,14 @@ const Home_C = ({navigation}) => {
                     }}>Second Year</Text>
                     <Table borderStyle={styles.border}>
                         <Row data={tableHead} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                        {tableData1.map((rowData, index) => (
-                            <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
-                                onPress={() => handleRowPress1(rowData)} />
-                        ))}
+                        {tableData1.length === 0 ? (
+                        <Text>No data to show</Text>
+                        ) : (
+                            tableData1.map((rowData, index) => (
+                                <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
+                                    onPress={() => handleRowPress1(rowData)} />
+                            ))
+                        )}
                     </Table>
                 </View>
 

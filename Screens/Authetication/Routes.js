@@ -36,23 +36,18 @@ const Routes = () => {
         const Test = database().ref('/Admin/Counsellors/');
         Test.on('value', snapshot => {
           const data = snapshot.val();
-          console.log(("line 39:",data));
+          // console.log("line 39:", data);
           const modifiedData = {};
 
           for (const key in data) {
             const modifiedKey = key.replace(/_/g, '.');
             modifiedData[modifiedKey] = data[key];
           }
-          // console.log("line 46:",modifiedData);
-          
-          const emails = Object.values(data).reduce((acc, curr) => {
-            if (curr.Admin !== true && curr.Email) {
-              acc.push(curr.Email);
-            } 
-            return acc;
-          }, []);
-          setCounsellorEmails(emails);
-          console.log("line 55:",counsellorEmails);
+          // console.log("line 46:", modifiedData);
+
+          const emailIds = Object.keys(modifiedData);
+          // console.log("line 49:", emailIds);
+          setCounsellorEmails(emailIds);
         });
       } catch (error) {
         console.error('Error fetching data:', error);

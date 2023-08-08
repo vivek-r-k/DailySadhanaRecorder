@@ -10,43 +10,15 @@ import LinearGradient from "react-native-linear-gradient";
 const Attendance_Details = ({route}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
-    const [attendance, setAttendance] = useState("");
 
-    const greenDot = <Icon name="dot-fill" size={18} color="green" />;
-    const redDot = <Icon name="dot-fill" size={18} color="red" />;
-    const yellowDot = <Icon name="dot-fill" size={18} color="yellow" />;
+    // console.log("in",route.params.name);
+    // console.log("line 23:",route.params.attendance);
+    // console.log("line 27:",attendance);
+    // console.log("line 25:",route.params.data);
+    // console.log("line 27:",route.params.dates);
 
     const tableHead = ['Date','Attendance'];
-    const tableData = [
-        ['30/07/23', 'Present'],
-        ['29/07/23', 'Absent'],
-        ['28/07/23', 'Late'],
-    ];
-    // console.log("in",route.params.name);
-    // dummy data for piechart
-    const data = [
-        {
-          name: "Present",
-          total: 25,
-          color: "green",
-          legendFontColor: "#000000",
-          legendFontSize: 15
-        },
-        {
-          name: "Absent",
-          total: 3,
-          color: "red",
-          legendFontColor: "#000000",
-          legendFontSize: 15
-        },
-        {
-          name: "Late",
-          total: 2,
-          color: "yellow",
-          legendFontColor: "#000000",
-          legendFontSize: 15
-        }
-    ]
+    const tableData = route.params.dates.map((date, index) => [date, route.params.attendance[index]]);
 
     const chartConfig = {
         backgroundGradientFrom: "#000000",
@@ -59,7 +31,6 @@ const Attendance_Details = ({route}) => {
         useShadowColorFromDataset: false // optional
     };
 
-    
     const screenWidth = Dimensions.get("window").width;
 
     return(
@@ -81,7 +52,7 @@ const Attendance_Details = ({route}) => {
                         color:'#000000'
                     }}>Last 30 days attendance</Text>
                     <PieChart
-                        data={data}
+                        data={route.params.data}
                         width={screenWidth}
                         height={240}
                         chartConfig={chartConfig}
