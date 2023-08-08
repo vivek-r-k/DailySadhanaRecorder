@@ -15,7 +15,7 @@ const Home_C = ({navigation}) => {
           Test.on('value', snapshot => {
             const data = snapshot.val();
             // console.log("line 19:",data);
-            for (const key in data) {
+            for (const key in data) {  
                 if (data.hasOwnProperty(key)) {
                   const user = data[key];
                   if (user.Email === currentUser.email) {

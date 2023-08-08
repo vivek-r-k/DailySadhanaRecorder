@@ -22,15 +22,16 @@ const Home_A = ({navigation}) => {
           const Test = database().ref('/Admin/Counsellors/');
           Test.on('value', snapshot => {
             const data = snapshot.val();
-            // console.log(data);
+            // console.log("line 25:",data); 
       
             // Extract the names from the data object and filter out "Admin" names
-            const names = Object.keys(data).filter(name => !data[name].Admin);
+            const names = Object.values(data).map(item => item.Name);
       
             // Convert names into the desired format [['Vivek'], ['Ani'], ['Harsh']]
             const formattedNames = names.map((name) => [name]);
       
             // Set the formatted names in the tableData1 state
+            // console.log("line 34:",typeof(formattedNames));
             setTableData2(formattedNames);
           });
         };
@@ -50,20 +51,21 @@ const Home_A = ({navigation}) => {
               return acc;
             }, []);
             setCounsellorEmails(emails);
-            console.log("line 53",typeof(counsellorEmails));
-            console.log("line 54",counsellorEmails);
+            // console.log("line 53",typeof(counsellorEmails));
+            // console.log("line 54",counsellorEmails);
           });
         };
         fetchData(); // Call the async function 
         
-        return () => {
-        const Test = database().ref('/Admin/Counsellors/');
-        Test.off();
-        };
+        // return () => {
+        // const Test = database().ref('/Admin/Counsellors/');
+        // Test.off();
+        // };
     }, []);
 
     const handleRowPress = (row) => {
         // Show a confirm delete dialog using Alert
+        // console.log("line 68:",row[0]);
         Alert.alert(
           'Confirm Delete',
           `Are you sure you want to remove ${row[0]}?`,
@@ -78,8 +80,28 @@ const Home_A = ({navigation}) => {
               onPress: () => {
                 // Perform delete operation here
                 const counsellorsRef = database().ref('/Admin/Counsellors');
-                counsellorsRef.child(row[0]).remove();
-                console.log('Item deleted successfully.');
+                // console.log("line 82:",counsellorsRef);
+
+                counsellorsRef.once("value", function(snapshot) {
+                  var counsellorsData = snapshot.val();
+                  
+                  for (var email in counsellorsData) {
+                      if (counsellorsData[email].Name === row[0]) {
+                          // Found the entry to delete
+                          delete counsellorsData[email];
+                          break; // No need to continue checking
+                      }
+                  }
+              
+                  // Update the database with the modified data
+                  counsellorsRef.set(counsellorsData, function(error) {
+                      if (error) {
+                          console.error("Data could not be updated:", error);
+                      } else {
+                          console.log("Entry for " + row[0] + " deleted successfully.");
+                      }
+                  });
+              });
               },
             },
           ],

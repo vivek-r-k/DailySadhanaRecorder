@@ -13,30 +13,29 @@ import auth from '@react-native-firebase/auth';
 const UserProfile = () => {
 
     // Below is for getting the name
-    // const currentUser = auth().currentUser;
-    // const [name1,setName1] = useState('')
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         // TODO: brainstorm for '/Admin/Counsellors/.......'
-    //       const Test = database().ref('/Admin/Counsellors/');
-    //       Test.on('value', snapshot => {
-    //         const data = snapshot.val();
-    //         // console.log("line 19:",data);
-    //         for (const key in data) {
-    //             if (data.hasOwnProperty(key)) {
-    //               const user = data[key];
-    //               if (user.Email === currentUser.email) {
-    //                 setName1(key);
-    //                 console.log("line27: ",key);
-    //                 break; // Exit the loop once the matching user is found
-    //               }
-    //             }
-    //           }
-    //         });
-    //         console.log("(line 33)name: ",name1);  
-    //     };
-    //     fetchData(); // Call the async function
-    // }, []);
+    const currentUser = auth().currentUser;
+    // console.log(currentUser.email);
+
+    const [name1,setName1] = useState('')
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref('/Admin/Counsellors/');
+          Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // Iterate through the Counsellors to find the desired email
+            let vivekData = null;
+            for (const counselorName in data) {
+              if (data[counselorName].Email === "01fe20bei015@kletech.ac.in") {
+                vivekData = data[counselorName];
+                break;
+              }
+            }
+            console.log("Vivek Data:", vivekData);
+          });
+        };
+        fetchData(); // Call the async function
+      }, []);
+      
 
     // const handleAdd = () => {
     //     if(name === "" || email === "" || password === ""){
@@ -128,6 +127,7 @@ const UserProfile = () => {
                         style={styles.picker}
                         onValueChange={(itemValue, itemIndex) => setAttendance(itemValue)}
                     >
+                        <Picker.Item label="Choose" value="" enabled={false}/> 
                         <Picker.Item label="Today's" value="Present" /> 
                         {/*TODO: Change the value */}
                         <Picker.Item label="Yesterday's" value="Absent" />
@@ -172,6 +172,7 @@ const UserProfile = () => {
                         style={styles.picker}
                         onValueChange={(itemValue, itemIndex) => setAttendance(itemValue)}
                     >
+                        <Picker.Item label="Choose" value="" enabled={false} />
                         <Picker.Item label="Present" value="Present" />
                         <Picker.Item label="Absent" value="Absent" />
                         <Picker.Item label="Late" value="Late" />

@@ -16,10 +16,13 @@ const Add_Delete = ({navigation}) => {
             Alert.alert("Please fill all the fields");
         }
         else{
+            // console.log("line 19:",email);
+            var modifiedEmail = email.replace(/\./g, '_');
+            // console.log("line 21:",modifiedEmail);
         database()
           .ref('/Admin/Counsellors')
           .update({
-            [name]: { Email: email, Password: password }
+            [modifiedEmail]: { Name: name, Password: password }
           })
           .then(() => 
           {

@@ -50,13 +50,20 @@ const SignIn = ({navigation}) => {
         Test.on('value', snapshot => {
             const data = snapshot.val();
             const counsellors = data?.Counsellors; // Access the "Counsellors" object
-            console.log("line 54: ",counsellors);
+            // console.log("line 53: ",counsellors);
 
+            const modifiedData = {};
+            for (const key in counsellors) {
+                const modifiedKey = key.replace(/_/g, '.');
+                modifiedData[modifiedKey] = counsellors[key];
+              }
+              
+            //   console.log("line 61:",modifiedData);
             // Check if the "Counsellors" object exists
             if (counsellors) {
-            setCounsellorData(counsellors); // Update the state with the "Counsellors" object
+            setCounsellorData(modifiedData); // Update the state with the "Counsellors" object
             }
-            // console.log(typeof(counsellorData))
+            // console.log("line 66:",counsellorData)
         });
         };
         fetchData(); // Call the async function
