@@ -10,7 +10,7 @@ const Add_Delete = ({navigation}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const {register,logout} = useContext(AuthContext)
- 
+
     const handleAdd = () => {
         if(name === "" || email === "" || password === ""){
             Alert.alert("Please fill all the fields");
@@ -26,10 +26,64 @@ const Add_Delete = ({navigation}) => {
           })
           .then(() => 
           {
-            Alert.alert(`Name: ${name}, Email: ${email} and Password: ${password} is added!`)
-            setName("");
-            setEmail("")
-            setPassword("")
+            database()
+            .ref('/Counsellor/')
+            .update({
+                [modifiedEmail]: { 
+                    "Second_Year":{
+                        "Emails":{
+                            dummy: ""
+                        }
+                    },
+                    "Third_Year":{
+                        "Emails":{
+                            dummy: ""
+                        }
+                    },
+                    "Fourth_Year":{
+                        "Emails":{
+                            dummy: ""
+                        }
+                    },
+                    "PassOut":{
+                        "Emails":{
+                            dummy: ""
+                        }
+                    },
+                 }
+            })
+            .then(() => {
+                database()
+                .ref('/Counsellor1/')
+                .update({
+                    [modifiedEmail]: { 
+                        "Second_Year":{
+                            "Emails":{
+                                dummy: ""
+                            }
+                        },
+                        "Third_Year":{
+                            "Emails":{
+                                dummy: ""
+                            }
+                        },
+                        "Fourth_Year":{
+                            "Emails":{
+                                dummy: ""
+                            }
+                        },
+                        "PassOut":{
+                            "Emails":{
+                                dummy: ""
+                            }
+                        },
+                     }
+                })
+                Alert.alert(`Name: ${name}, Email: ${email} and Password: ${password} is added!`)
+                setName("");
+                setEmail("")
+                setPassword("")
+            })
           }
           );
         }     

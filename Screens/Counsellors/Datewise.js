@@ -1,10 +1,38 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, useColorScheme,FlatList, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 
 const Datewise = ({navigation}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
+
+    const currentUser = auth().currentUser;
+    var modifiedEmail = currentUser.email.replace(/\./g, '_');
+    // console.log("line 13:",modifiedEmail);
+    const [secondYearData,setSecondYearData] = useState('')
+    const [thirdYearData,setThirdYearData] = useState('')
+    const [fourthYearData,setFourthYearData] = useState('')
+    const [passOutData,setPassOutData] = useState('')
+
+    useEffect(() => {
+        const fetchData = async () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Second_Year/Emails/`);
+        Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log("line 20:",data);  
+            setSecondYearData(data)
+            // console.log("line 22:",secondYearData); 
+        });
+        };
+        fetchData(); // Call the async function
+
+        return () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Second_Year/Emails/`);
+        Test.off();
+        };
+    }, []);
 
     const getLast30DaysDates = () => {
         const today = new Date();
@@ -16,20 +44,19 @@ const Datewise = ({navigation}) => {
           const day = date.getDate();
           const month = date.getMonth() + 1; // Months are zero-indexed, so we add 1 to get the correct month number
           const year = date.getFullYear();
-          const formattedDate = `${day < 10 ? '0' : ''}${day}/${month < 10 ? '0' : ''}${month}/${year}`;
+          const formattedDate = `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
           last30DaysDates.push(formattedDate);
         }
       
         return last30DaysDates;
-      };
-        
+    };    
 
     const datesArray = getLast30DaysDates();
 
     const renderItem = ({ item }) => {
         // console.log("datewise: ",item);
         return (
-          <TouchableOpacity style={styles.dateItem} onPress={() => navigation.navigate('SingleDateData',{date:item})}>
+          <TouchableOpacity style={styles.dateItem} onPress={() => navigation.navigate('SingleDateData',{date:item,secondYearData})}>
             <Text style={{
                 justifyContent: 'center',
                 alignSelf: 'flex-start',
@@ -45,27 +72,22 @@ const Datewise = ({navigation}) => {
         );
       };
 
-    return(
-        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
-        <SafeAreaView>
-            <ScrollView>
-                <View style={styles.container}>
-                    <Text style={styles.UserName}>Datewise data</Text>
-                </View>
-                <View style={{justifyContent:'center',flex:1,margin:'3%'}}>
-                {/* <TouchableOpacity onPress={() => navigate(goToSignleDateScreen)}> */}
+      return (
+        <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1 }}>
+              <Text style={styles.UserName}>Datewise data</Text>
+                <View style={{ flex: 1, margin: '3%' }}>
                     <FlatList
-                            data={datesArray}
-                            renderItem={renderItem}
-                            ItemSeparatorComponent={() => <View style={styles.separator} />}
-                            keyExtractor={(item, index) => index.toString()}
+                        data={datesArray}
+                        renderItem={renderItem}
+                        ItemSeparatorComponent={() => <View style={styles.separator} />}
+                        keyExtractor={(item, index) => index.toString()}
                     />
-                {/* </TouchableOpacity> */}
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+          </SafeAreaView>
         </LinearGradient>
-    )
+      );
+      
 }
 
 const styles = StyleSheet.create({

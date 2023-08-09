@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, ActivityIndicator, useColorScheme, TouchableOpacity } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import {PieChart, LineChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,6 +10,17 @@ import database from '@react-native-firebase/database';
 const Details_of_Counselee = ({navigation,route}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+      // Simulate a loading delay of 10 seconds
+      const loadingTimeout = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+
+      return () => clearTimeout(loadingTimeout);
+    }, []);
 
     // console.log("line 15",route.params.data[0]);
     // console.log("line 16",route.params.batch);
@@ -28,7 +39,7 @@ const Details_of_Counselee = ({navigation,route}) => {
       const fetchData = async () => {
         const Test = database().ref(`/Counsellor/${route.params.counsellorEmail}/${route.params.batch}/Emails/`);
         Test.on('value', async snapshot => {
-          const data = snapshot.val();
+          const data = await snapshot.val();
           const counseleeDataKey = Object.keys(data).find(key => data[key].Name === route.params.data[0]);
           const counseleeData = data[counseleeDataKey].Dates;
           const datesArray = Object.keys(counseleeData);
@@ -139,8 +150,7 @@ const Details_of_Counselee = ({navigation,route}) => {
         labels: dates,
         datasets: [
           {
-            // TODO: data is getting late, so it is throwing error for below
-            data: [300, 250, 280, 130, 190, 260],
+            data: reading,
             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
             strokeWidth: 2 // optional
           }
@@ -151,7 +161,7 @@ const Details_of_Counselee = ({navigation,route}) => {
         labels: dates,
         datasets: [
           {
-            data: [300, 250, 280, 130, 190, 260],
+            data: hearing,
             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
             strokeWidth: 2 // optional
           }
@@ -192,8 +202,14 @@ const Details_of_Counselee = ({navigation,route}) => {
                     />
                     </TouchableOpacity>
                 </View>
-                
-                <View style={{marginTop: '3%'}}>
+
+                {isLoading ? (
+                  // Display the loader while isLoading is true
+                  <ActivityIndicator size="large" color="blue" />
+                ) : (
+                  // Display your main content when isLoading becomes false
+                  <>
+                  <View style={{marginTop: '3%'}}>
                     <Text 
                     style={{
                         justifyContent:'center', 
@@ -252,7 +268,8 @@ const Details_of_Counselee = ({navigation,route}) => {
                         // yAxisLabel="Time"
                     />
                 </View>
-
+                </>
+                )}
             </ScrollView>
         </SafeAreaView>
         </LinearGradient>

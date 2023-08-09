@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, useColorScheme} from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import {PieChart, LineChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Octicons'; // dot-fill

@@ -6,29 +6,30 @@ import Icon from 'react-native-vector-icons/Octicons'; // dot-fill
 import { Dimensions } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import LinearGradient from "react-native-linear-gradient";
+import database from '@react-native-firebase/database';
 
 const SingleDateData = ({route}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const [attendance, setAttendance] = useState("");
 
-    const greenDot = <Icon name="dot-fill" size={18} color="green" />;
-    const redDot = <Icon name="dot-fill" size={18} color="red" />;
-    const yellowDot = <Icon name="dot-fill" size={18} color="yellow" />;
+    // console.log("line 16:",route.params.secondYearData); 
+    // console.log("line 17:",route.params.date); 
 
-    // console.log("single",route.params.date); 
+    var secondYearData = route.params.secondYearData
+    var date = route.params.date
 
+    const tableHead = ['Counselee','Attendance','Chanting', 'Hearing','Reading',];
     // second year
-    const tableHead2 = ['Counselee','Attendance','Chanting', 'Hearing','Reading',];
-    const tableData2 = [
-        ['John','Present', '15:30', 130, 130],
-        ['Wick','Absent', '20:50', 240, 130],
-        ['Cena','Absent', '16:05', 130, 240],
-        ['John','Present', '12:45', 240, 130],
-        ['Wick','Present', '09:45', 240, 130],
-        ['Cena','Late', '13:40', 240, 130],
-    ];
-
+    const tableData1 = [];
+    for (const userEmail in secondYearData) {
+    const userData = secondYearData[userEmail];
+    const userDataForDate = userData.Dates[date];
+    if (userDataForDate) {
+        const { Attendance, Chanting, Hearing, Reading } = userDataForDate;
+        tableData1.push([userData.Name, Attendance, Chanting, Hearing, Reading]);
+    }
+    }
     // similarly TODO: add for third, fourth and passout
 
     return(
@@ -45,9 +46,9 @@ const SingleDateData = ({route}) => {
                     </Text>
                     <Text style={styles.UserName}>Chanting, Hearing and Reading</Text>
                     <Table borderStyle={styles.border}>
-                        <Row data={tableHead2} style={styles.head} textStyle={styles.text}/>
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
                         {/* TODO: Add ontouch (if necessary) */}
-                        <Rows data={tableData2} textStyle={styles.text}/>
+                        <Rows data={tableData1} textStyle={styles.text}/>
                     </Table>
                 </View>
             </ScrollView>

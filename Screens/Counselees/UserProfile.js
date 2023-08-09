@@ -1,5 +1,5 @@
 import React,{useState,useContext,useEffect} from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, useColorScheme, TouchableOpacity } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import {PieChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,57 +10,59 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 
-const UserProfile = () => {
+const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
+    const year = date.getFullYear().toString();
+    return `${day}-${month}-${year}`;
+  };
 
+const UserProfile = () => {
     // Below is for getting the name
     const currentUser = auth().currentUser;
-    // console.log(currentUser.email);
+    var modifiedEmail = currentUser.email.replace(/\./g, '_');
+    // console.log("line 24:",modifiedEmail);
 
     const [name1,setName1] = useState('')
+
+    const [counEmail,setCounEmail] = useState('')
+    const [whichBatch,setWhichBatch] = useState('')
+
     useEffect(() => {
         const fetchData = async () => {
-          const Test = database().ref('/Admin/Counsellors/');
+          const Test = database().ref('/Counsellor1/');
           Test.on('value', snapshot => {
             const data = snapshot.val();
-            // Iterate through the Counsellors to find the desired email
-            let vivekData = null;
-            for (const counselorName in data) {
-              if (data[counselorName].Email === "01fe20bei015@kletech.ac.in") {
-                vivekData = data[counselorName];
+            // console.log("line 31:",data);
+            let emailId;
+            let batch;
+
+            // Loop through the data object to find the matching email
+            for (const key in data) {
+            for (const batchKey in data[key]) {
+                if (batchKey !== "Emails" && data[key][batchKey]?.Emails[modifiedEmail]) {
+                emailId = key;
+                batch = batchKey;
                 break;
-              }
+                }
             }
-            // console.log("Vivek Data:", vivekData);
+            if (emailId && batch) {
+                break;
+            }
+            }
+            setCounEmail(emailId) 
+            setWhichBatch(batch) 
+            // console.log("line 54:",counEmail);
+            // console.log("line 55:",whichBatch);
+            const nameObject = data["01fe20bei015@kletech_ac_in"]["Second_Year"]["Emails"][modifiedEmail];
+            setName1(nameObject.Name)
           });
         };
         fetchData(); // Call the async function
-      }, []);
-      
-
-    // const handleAdd = () => {
-    //     if(name === "" || email === "" || password === ""){
-    //         Alert.alert("Please fill all the fields");
-    //     }
-    //     else{
-    //     database()
-    //       .ref('/Admin/Counsellors')
-    //       .update({
-    //         [name]: { Email: email, Password: password }
-    //       })
-    //       .then(() => 
-    //       {
-    //         Alert.alert(`Name: ${name}, Email: ${email} and Password: ${password} is added!`)
-    //         // setName("");
-    //         // setEmail("")
-    //         // setPassword("")
-    //       }
-    //       );
-    //     }     
-    // };
+    }, []);
 
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
-    const [attendance, setAttendance] = useState("");
     const { logout } = useContext(AuthContext)
     // dummy data for piechart
     const data = [
@@ -104,7 +106,7 @@ const UserProfile = () => {
     const onTimeChange = (event, selectedDate) => {
         setShowTimePicker(false);
         if (selectedDate !== undefined) {
-        onChange(selectedDate);
+            onChange(selectedDate);
         }
     };
 
@@ -112,58 +114,109 @@ const UserProfile = () => {
         setShowTimePicker(true);
     };
 
+    const formatTime = (date) => {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+    };
+
+    const [date, setDate] = useState("");
+    const [reading, setReading] = useState("");
+    const [hearing, setHearing] = useState("");
+    const [chanting, setChanting] = useState("");
+    const [attendance, setAttendance] = useState("");
+      
+    const handleAdd = () => {
+        const time = formatTime(value)
+        setChanting(time)
+        // console.log("line 111:",date);
+        // console.log("line 112:",reading);
+        // console.log("line 113:",hearing);
+        // console.log("line 114:",chanting);
+        // console.log("line 115:",attendance);
+        if(date === "" || reading === "" || hearing === "" || chanting === "" || attendance === ""){
+            Alert.alert("Please fill all the fields");
+        }
+        else{
+        database()
+          .ref(`/Counsellor/${counEmail}/${whichBatch}/Emails/${modifiedEmail}/Dates/`)
+          .update({
+            [date]: { "Attendance": attendance, "Chanting": chanting, "Hearing": hearing, "Reading": reading }
+          })
+          .then(() => 
+          {
+            Alert.alert(`Data for ${date} is submitted!`)
+            setAttendance("");
+            setChanting("")
+            setDate("")
+            setHearing("")
+            setReading("")
+          }
+          );
+        }     
+    };
+
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const formattedToday = formatDate(today);
+    const formattedYesterday = formatDate(yesterday);
+    // console.log("Formatted Today", typeof(formattedToday) );
+
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.UserName}>ABC</Text>
+                    <Text style={styles.UserName}>{name1}</Text>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Date: </Text>
                     <View style={styles.pickerContainer}>
                     <Picker
-                        selectedValue={attendance}
+                        selectedValue={date}
                         style={styles.picker}
-                        onValueChange={(itemValue, itemIndex) => setAttendance(itemValue)}
+                        onValueChange={(itemValue, itemIndex) => setDate(itemValue)}
                     >
                         <Picker.Item label="Choose" value="" enabled={false}/> 
-                        <Picker.Item label="Today's" value="Present" /> 
+                        <Picker.Item label="Today's" value={formattedToday}/> 
                         {/*TODO: Change the value */}
-                        <Picker.Item label="Yesterday's" value="Absent" />
+                        <Picker.Item label="Yesterday's" value={formattedYesterday} />
                     </Picker>
                     </View>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Reading (in min):</Text>
-                    <TextInput style={styles.input} placeholder="eg: 180" keyboardType="numeric"/>
+                    <TextInput style={styles.input} placeholder="eg: 180" keyboardType="numeric" onChangeText={(val) => setReading(val)}/>
                 </View>
                 <View style={styles.container1}>
                     <Text style={styles.data}>Hearing (in min): </Text>
-                    <TextInput style={styles.input} placeholder="eg: 180" keyboardType="numeric"/>
+                    <TextInput style={styles.input} placeholder="eg: 180" keyboardType="numeric" onChangeText={(val) => setHearing(val)}/>
                 </View>
-                <View style={styles.container1}>
-                    <Text style={styles.data}>Chanting done at: </Text>
-                    <TouchableOpacity style={styles.input} onPress={showTimePickerHandler}>
-                        <Text style={{alignSelf:'center',justifyContent:'center', flex:1}}>
-                            {value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => alert("If chanting completed after 23:59 i.e on next day, please fill 23:59 only.")}>
-                        <Text><Icon name="information-circle-outline" size={30} color="#900" /></Text>
-                    </TouchableOpacity>
 
-                    {showTimePicker && (
-                        <DateTimePicker
-                        testID="dateTimePicker"
-                        value={value}
-                        mode="time"
-                        is24Hour={true}
-                        display="default"
-                        onChange={onTimeChange}
-                        />
-                    )}
+                <View style={styles.container1}>
+                            <Text style={styles.data}>Chanting done at: </Text>
+                            <TouchableOpacity style={styles.input} onPress={showTimePickerHandler}>
+                                <Text style={{ alignSelf: 'center', justifyContent: 'center', flex: 1 }}>
+                                    {formatTime(value)}
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => alert("If chanting completed after 23:59 i.e on next day, please fill 23:59 only.")}>
+                                <Text><Icon name="information-circle-outline" size={30} color="#900" /></Text>
+                            </TouchableOpacity>
+                            {showTimePicker && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={value}
+                                    mode="time"
+                                    is24Hour={true}
+                                    display="default"
+                                    onChange={onTimeChange}
+                                />
+                            )}
                 </View>
+
                 <View style={styles.container1}>
                     <Text style={styles.data}>Attendance: </Text>
                     <View style={styles.pickerContainer}>
@@ -183,7 +236,7 @@ const UserProfile = () => {
                     </TouchableOpacity>
                 </View>
                 <View style={{margin: "3%"}}>
-                    <TouchableOpacity style={styles.button} onPress={() => {}}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleAdd()}>
                         <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>Submit</Text>
                     </TouchableOpacity>
                 </View>

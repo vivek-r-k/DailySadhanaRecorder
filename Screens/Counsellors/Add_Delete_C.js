@@ -13,42 +13,41 @@ const Add_Delete_C = () => {
     
     // Below is for getting the name
     const currentUser = auth().currentUser;
+    var modifiedEmail = currentUser.email.replace(/\./g, '_');
     const [name1,setName1] = useState('')
     useEffect(() => {
         const fetchData = async () => {
-          const Test = database().ref('/Admin/Counsellors/');
-          Test.on('value', snapshot => {
+        const Test = database().ref('/Admin/Counsellors/');
+        Test.on('value', snapshot => {
             const data = snapshot.val();
-            // console.log("line 19:",data);
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                  const user = data[key];
-                  if (user.Email === currentUser.email) {
-                    setName1(key);
-                    // console.log("line27: ",key);
-                    break; // Exit the loop once the matching user is found
-                  }
-                }
-              }
-            });
-            // console.log("(line 33)name: ",name1);  
+            // console.log("line 19:",data[modifiedEmail].Name); 
+            setName1(data[modifiedEmail].Name)
+        });
         };
         fetchData(); // Call the async function
+
+        return () => {
+        const Test = database().ref('/Admin/Counsellors/');
+        Test.off();
+        };
     }, []);
+
 
     const [name,setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [batch, setBatch] = useState("");
     const handleAdd = () => {
+        var modifiedEmail1 = email.replace(/\./g, '_'); 
+        console.log("line 40:",modifiedEmail1);
         if(name === "" || email === "" || password === "" || batch === ""){
             Alert.alert("Please fill all the fields");
         }
         else{
         database()
-          .ref(`/Admin/Counsellors/${name1}/Batch/${batch}/`)
+          .ref(`/Counsellor1/${modifiedEmail}/${batch}/Emails/`)
           .update({
-            [name]: { Email: email, Password: password }
+            [modifiedEmail1]: { Name: name }
           })
           .then(() => 
           {
@@ -67,7 +66,7 @@ const Add_Delete_C = () => {
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <Text style={styles.UserName}>Counsellor {name1}</Text>
+                    <Text style={styles.UserName}>Counsellor: {name1}</Text>
                 </View>
                 <View style={{justifyContent:'center'}}>
                     <Text style={{
@@ -92,10 +91,10 @@ const Add_Delete_C = () => {
                         onValueChange={(itemValue, itemIndex) => setBatch(itemValue)}
                     >
                         <Picker.Item label="Choose" value="" enabled={false}/>
-                        <Picker.Item label="Second Year" value="SecondYear" />
-                        <Picker.Item label="Third Year" value="ThirdYear" />
-                        <Picker.Item label="Fourth Year" value="FourthYear" />
-                        <Picker.Item label="Passout" value="Passout" />
+                        <Picker.Item label="Second Year" value="Second_Year" />
+                        <Picker.Item label="Third Year" value="Third_Year" />
+                        <Picker.Item label="Fourth Year" value="Fourth_Year" />
+                        <Picker.Item label="Passout" value="PassOut" />
                     </Picker>
                     </View>
                 </View>
