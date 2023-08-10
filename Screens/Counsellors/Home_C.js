@@ -272,6 +272,51 @@ const Home_C = ({navigation}) => {
         navigation.navigate('Details_of_Counselee',{data: rowData,counsellorEmail: modifiedEmail,batch:"PassOut"})
     }     
     // -------------------End of getting from database for table 3------------------------- \\
+
+    // const handleRowPressForDelete = (row) => {
+    //     // Show a confirm delete dialog using Alert
+    //     Alert.alert(
+    //         'Confirm Delete',
+    //         `Are you sure you want to remove ${row[0]}?`,
+    //         [
+    //             {
+    //                 text: 'Cancel',
+    //                 style: 'cancel',
+    //             },
+    //             {
+    //                 text: 'Delete',
+    //                 style: 'destructive',
+    //                 onPress: () => {
+    //                     // Perform delete operation here
+    //                     const counsellorsRef = database().ref(`/Counsellor/${modifiedEmail}/`);
+                        
+    //                     counsellorsRef.once("value", function(snapshot) {
+    //                         var counsellorsData = snapshot.val();
+                            
+    //                         for (var email in counsellorsData) {
+    //                             if (counsellorsData[email].Name === row[0]) {
+    //                                 // Found the entry to delete
+    //                                 delete counsellorsData[email];
+    //                                 break; // No need to continue checking
+    //                             }
+    //                         }
+                        
+    //                         // Update the database with the modified data
+    //                         counsellorsRef.set(counsellorsData, function(error) {
+    //                             if (error) {
+    //                                 console.error("Data could not be updated:", error);
+    //                             } else {
+    //                                 console.log("Entry for " + row[0] + " deleted successfully.");
+    //                             }
+    //                         });
+    //                     });
+    //                 },
+    //             },
+    //         ],
+    //         { cancelable: false }
+    //     );
+    // };
+    
     
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
@@ -307,7 +352,9 @@ const Home_C = ({navigation}) => {
                         ) : (
                             tableData1.map((rowData, index) => (
                                 <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
-                                    onPress={() => handleRowPress1(rowData)} />
+                                    onPress={() => handleRowPress1(rowData)} 
+                                    // onLongPress={() => handleRowPressForDelete(rowData)}    
+                                />
                             ))
                         )}
                     </Table>
