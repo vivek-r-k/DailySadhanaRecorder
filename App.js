@@ -19,6 +19,7 @@ import Providers from "./Screens/Authetication";
 
 const App = () => {
   return(
+    
       <Providers />
     // <SignIn />
 

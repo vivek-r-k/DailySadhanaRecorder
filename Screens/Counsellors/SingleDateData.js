@@ -13,10 +13,13 @@ const SingleDateData = ({route}) => {
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const [attendance, setAttendance] = useState("");
 
-    // console.log("line 16:",route.params.secondYearData); 
+    // console.log("line 16:",route.params); 
     // console.log("line 17:",route.params.date); 
 
     var secondYearData = route.params.secondYearData
+    var thirdYearData = route.params.thirdYearData
+    var fourthYearData = route.params.fourthYearData
+    var passOutData = route.params.passOutData
     var date = route.params.date
 
     const tableHead = ['Counselee','Attendance','Chanting', 'Hearing','Reading',];
@@ -31,6 +34,35 @@ const SingleDateData = ({route}) => {
     }
     }
     // similarly TODO: add for third, fourth and passout
+    const tableData2 = [];
+    for (const userEmail in thirdYearData) {
+    const userData = thirdYearData[userEmail];
+    const userDataForDate = userData.Dates[date];
+    if (userDataForDate) {
+        const { Attendance, Chanting, Hearing, Reading } = userDataForDate;
+        tableData2.push([userData.Name, Attendance, Chanting, Hearing, Reading]);
+    }
+    }
+
+    const tableData3 = [];
+    for (const userEmail in fourthYearData) {
+    const userData = fourthYearData[userEmail];
+    const userDataForDate = userData.Dates[date];
+    if (userDataForDate) {
+        const { Attendance, Chanting, Hearing, Reading } = userDataForDate;
+        tableData3.push([userData.Name, Attendance, Chanting, Hearing, Reading]);
+    }
+    }
+
+    const tableData4 = [];
+    for (const userEmail in passOutData) {
+    const userData = passOutData[userEmail];
+    const userDataForDate = userData.Dates[date];
+    if (userDataForDate) {
+        const { Attendance, Chanting, Hearing, Reading } = userDataForDate;
+        tableData4.push([userData.Name, Attendance, Chanting, Hearing, Reading]);
+    }
+    }
 
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
@@ -38,18 +70,41 @@ const SingleDateData = ({route}) => {
             <ScrollView>
                 <View style={styles.container}>
                     <Text style={styles.UserName}>Details of {route.params.date}</Text> 
-                    {/* TODO: change the date to onclicked date */}
                 </View>
-                <View style={styles.container1}>                 
-                    <Text style={{justifyContent: 'center', alignSelf:'center', fontSize:35, color:'#000000', fontWeight:'bold', marginTop:'2%',marginBottom:'-5%'}}>
+                <View style={styles.container1}>       
+                    <Text style={styles.UserName}>Chanting, Hearing and Reading</Text>
+                    <Text style={{justifyContent: 'center', alignSelf:'center', fontSize:35, color:'#000000', fontWeight:'bold', marginTop:'2%',marginBottom:'3%'}}>
                         Second Year
                     </Text>
-                    <Text style={styles.UserName}>Chanting, Hearing and Reading</Text>
                     <Table borderStyle={styles.border}>
                         <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
-                        {/* TODO: Add ontouch (if necessary) */}
                         <Rows data={tableData1} textStyle={styles.text}/>
                     </Table>
+
+                    <Text style={{justifyContent: 'center', alignSelf:'center', fontSize:35, color:'#000000', fontWeight:'bold', marginTop:'2%',marginBottom:'3%'}}>
+                        Third Year
+                    </Text>
+                    <Table borderStyle={styles.border}>
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
+                        <Rows data={tableData2} textStyle={styles.text}/>
+                    </Table>
+
+                    <Text style={{justifyContent: 'center', alignSelf:'center', fontSize:35, color:'#000000', fontWeight:'bold', marginTop:'2%',marginBottom:'3%'}}>
+                        Fourth Year
+                    </Text>
+                    <Table borderStyle={styles.border}>
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
+                        <Rows data={tableData3} textStyle={styles.text}/>
+                    </Table>
+
+                    <Text style={{justifyContent: 'center', alignSelf:'center', fontSize:35, color:'#000000', fontWeight:'bold', marginTop:'2%',marginBottom:'3%'}}>
+                        Pass Out
+                    </Text>
+                    <Table borderStyle={styles.border}>
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text}/>
+                        <Rows data={tableData4} textStyle={styles.text}/>
+                    </Table>
+
                 </View>
             </ScrollView>
         </SafeAreaView>

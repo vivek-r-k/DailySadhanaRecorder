@@ -34,6 +34,60 @@ const Datewise = ({navigation}) => {
         };
     }, []);
 
+    useEffect(() => {
+        const fetchData = async () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Third_Year/Emails/`);
+        Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log("line 20:",data);  
+            setThirdYearData(data)
+            // console.log("line 22:",secondYearData); 
+        });
+        };
+        fetchData(); // Call the async function
+
+        return () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Third_Year/Emails/`);
+        Test.off();
+        };
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Fourth_Year/Emails/`);
+        Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log("line 20:",data);  
+            setFourthYearData(data)
+            // console.log("line 22:",secondYearData); 
+        });
+        };
+        fetchData(); // Call the async function
+
+        return () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Fourth_Year/Emails/`);
+        Test.off();
+        };
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/PassOut/Emails/`);
+        Test.on('value', snapshot => {
+            const data = snapshot.val();
+            // console.log("line 20:",data);  
+            setPassOutData(data)
+            // console.log("line 22:",secondYearData); 
+        });
+        };
+        fetchData(); // Call the async function
+
+        return () => {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/PassOut/Emails/`);
+        Test.off();
+        };
+    }, []);
+
     const getLast30DaysDates = () => {
         const today = new Date();
         const last30DaysDates = [];
@@ -56,7 +110,7 @@ const Datewise = ({navigation}) => {
     const renderItem = ({ item }) => {
         // console.log("datewise: ",item);
         return (
-          <TouchableOpacity style={styles.dateItem} onPress={() => navigation.navigate('SingleDateData',{date:item,secondYearData})}>
+          <TouchableOpacity style={styles.dateItem} onPress={() => navigation.navigate('SingleDateData',{date:item,secondYearData,thirdYearData,fourthYearData,passOutData})}>
             <Text style={{
                 justifyContent: 'center',
                 alignSelf: 'flex-start',

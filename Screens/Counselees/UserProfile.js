@@ -30,36 +30,36 @@ const UserProfile = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-          const Test = database().ref('/Counsellor1/');
-          Test.on('value', snapshot => {
-            const data = snapshot.val();
-            // console.log("line 31:",data);
-            let emailId;
-            let batch;
-
-            // Loop through the data object to find the matching email
-            for (const key in data) {
-            for (const batchKey in data[key]) {
-                if (batchKey !== "Emails" && data[key][batchKey]?.Emails[modifiedEmail]) {
-                emailId = key;
-                batch = batchKey;
-                break;
+            const Test = database().ref('/Counsellor1/');
+            await Test.on('value', async snapshot => {
+                const data = snapshot.val();
+                const nameObject = data["01fe20bei015@kletech_ac_in"]["Second_Year"]["Emails"][modifiedEmail];
+    
+                if (nameObject && nameObject.Name) {
+                    setName1(nameObject.Name);
                 }
-            }
-            if (emailId && batch) {
-                break;
-            }
-            }
-            setCounEmail(emailId) 
-            setWhichBatch(batch) 
-            // console.log("line 54:",counEmail);
-            // console.log("line 55:",whichBatch);
-            const nameObject = data["01fe20bei015@kletech_ac_in"]["Second_Year"]["Emails"][modifiedEmail];
-            setName1(nameObject.Name)
-          });
+    
+                let emailId;
+                let batch;
+    
+                for (const key in data) {
+                    for (const batchKey in data[key]) {
+                        if (batchKey !== "Emails" && data[key][batchKey]?.Emails[modifiedEmail]) {
+                            emailId = key;
+                            batch = batchKey;
+                            break;
+                        }
+                    }
+                    if (emailId && batch) {
+                        break;
+                    }
+                }
+                setCounEmail(emailId);
+                setWhichBatch(batch);
+            });
         };
-        fetchData(); // Call the async function
-    }, []);
+        fetchData();
+    }, []);    
 
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
@@ -117,7 +117,7 @@ const UserProfile = () => {
     const formatTime = (date) => {
         const hours = date.getHours();
         const minutes = date.getMinutes();
-        return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+        return `${hours < 10 ? '0' : ''}${hours}-${minutes < 10 ? '0' : ''}${minutes}`;
     };
 
     const [date, setDate] = useState("");

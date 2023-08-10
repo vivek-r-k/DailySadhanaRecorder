@@ -1,11 +1,10 @@
 import React,{useState,useEffect} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, ActivityIndicator, useColorScheme, TouchableOpacity } from "react-native";
-import {Picker} from '@react-native-picker/picker';
 import {PieChart, LineChart} from 'react-native-chart-kit'
-import Icon from 'react-native-vector-icons/Ionicons';
 import { Dimensions } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import database from '@react-native-firebase/database';
+import ChantingChart from "./ChantingChart";
 
 const Details_of_Counselee = ({navigation,route}) => {
     const colorScheme = useColorScheme();
@@ -17,7 +16,7 @@ const Details_of_Counselee = ({navigation,route}) => {
       // Simulate a loading delay of 10 seconds
       const loadingTimeout = setTimeout(() => {
         setIsLoading(false);
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(loadingTimeout);
     }, []);
@@ -75,6 +74,7 @@ const Details_of_Counselee = ({navigation,route}) => {
           setPresentCount(presentCount1);
           setAbsentCount(absentCount1);
           setLateCount(lateCount1);
+          // console.log("line 78:",dates);   
           // console.log("line 67:",presentCount); 
           // console.log("line 68:",absentCount); 
           // console.log("line 69:",lateCount); 
@@ -127,24 +127,11 @@ const Details_of_Counselee = ({navigation,route}) => {
         color: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
         strokeWidth: 2, // optional, default 3
         barPercentage: 0.5,
-        useShadowColorFromDataset: false // optional
+        useShadowColorFromDataset: false, // optional
+        xAxisLabelRotation: -25,
     };
 
-    // Line graph data
-    // Chanting
-    const Chanting = {
-        labels: dates,
-        datasets: [
-          {
-            // TODO: figure out how to store hours in below data such 13-40
-            // Before that check what and how value is sent from userProfile.js for time
-            data: [300, 250, 280, 130, 190, 260],
-            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-            strokeWidth: 2, // optional
-            legend: ["Chanting done at"] // optional
-          }
-        ],
-      };
+    
     // Reading
     const Reading = {
         labels: dates,
@@ -209,6 +196,19 @@ const Details_of_Counselee = ({navigation,route}) => {
                 ) : (
                   // Display your main content when isLoading becomes false
                   <>
+                  <View>
+                    <Text 
+                    style={{
+                        justifyContent:'center', 
+                        flex:1,
+                        fontSize:20,
+                        alignSelf:'center',
+                        fontWeight:"bold",
+                        color:'#000000'
+                    }}>Chanting done at</Text>
+                    <ChantingChart xData={dates} yData={chanting} />
+                  </View>
+
                   <View style={{marginTop: '3%'}}>
                     <Text 
                     style={{
@@ -219,14 +219,18 @@ const Details_of_Counselee = ({navigation,route}) => {
                         fontWeight:"bold",
                         color:'#000000'
                     }}>Hearing</Text>
-                    <LineChart
-                        data={Hearing}
-                        width={screenWidth}
-                        height={220}
-                        chartConfig={chartConfig}
-                        // xAxisLabel="Date"
-                        // yAxisLabel="Time"
-                    />
+                    <ScrollView horizontal>
+                        <View style={{ width: Hearing.labels.length * 150 /* Adjust width based on data */ }}>
+                        <LineChart
+                            data={Hearing}
+                            width={screenWidth}
+                            height={220}
+                            chartConfig={chartConfig}
+                            fromZero={true}
+                            verticalLabelRotation={-25}
+                        />
+                      </View>
+                    </ScrollView>
                 </View>
 
                 <View style={{marginTop: '3%'}}>
@@ -239,34 +243,18 @@ const Details_of_Counselee = ({navigation,route}) => {
                         fontWeight:"bold",
                         color:'#000000'
                     }}>Reading</Text>
+                    <ScrollView horizontal>
+                      <View style={{ width: Reading.labels.length * 150 /* Adjust width based on data */ }}>
                     <LineChart
                         data={Reading}
                         width={screenWidth}
                         height={220}
                         chartConfig={chartConfig}
-                        // xAxisLabel="Date"
-                        // yAxisLabel="Time"
+                        fromZero={true}
+                        verticalLabelRotation={-25}
                     />
-                </View>
-
-                <View>
-                    <Text 
-                    style={{
-                        justifyContent:'center', 
-                        flex:1,
-                        fontSize:20,
-                        alignSelf:'center',
-                        fontWeight:"bold",
-                        color:'#000000'
-                    }}>Chanting done at</Text>
-                    <LineChart
-                        data={Chanting}
-                        width={screenWidth}
-                        height={220}
-                        chartConfig={chartConfig}
-                        // xAxisLabel="Date"
-                        // yAxisLabel="Time"
-                    />
+                    </View>
+                    </ScrollView>
                 </View>
                 </>
                 )}

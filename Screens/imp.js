@@ -16,4 +16,9 @@ an email will be sent for changing the password, then use that password to login
 
 No need to click on forget password everytime, you can use it if you forgot the password 
 
+Incase while before fetching data, if there is an error then check-out:
+https://chat.openai.com/share/f9cd3349-e1d5-4f89-a369-ec9306927acb
+
+// TODO: the firebase realtime database is kept for test-mode, make it locked-mode after
+the app goes live with production mode.
 */
