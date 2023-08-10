@@ -89,6 +89,189 @@ const Home_C = ({navigation}) => {
         navigation.navigate('Details_of_Counselee',{data: rowData,counsellorEmail: modifiedEmail,batch:"Second_Year"})
     }     
     // -------------------End of getting from database for table 1------------------------- \\
+
+    // ----------------------------Get from database for table 2---------------------------- \\
+    const [tableData2, setTableData2] = useState([]);
+    useEffect(() => {
+    const fetchData = async () => {
+        try {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Third_Year/Emails/`);
+
+        // Wrap the event listener in a Promise
+        const snapshotPromise = new Promise((resolve) => {
+            Test.on('value', (snapshot) => {
+            resolve(snapshot);
+            });
+        }); 
+
+        // Wait for the Promise to resolve
+        const snapshot = await snapshotPromise;
+
+        const data = snapshot.val();
+        // console.log("line 49:", data);
+
+        if (data) {
+            const resultArray = [];
+
+            for (const key in data) {
+            const userData = data[key];
+            const datesArray = Object.keys(userData.Dates).sort();
+            const lastDate = datesArray[datesArray.length - 1];
+            const lastObject = userData.Dates[lastDate];
+            
+            const valuesArray = [
+                userData.Name,
+                lastDate,
+                lastObject.Attendance,
+                lastObject.Chanting,
+                lastObject.Hearing.toString(),
+                lastObject.Reading.toString()
+            ];
+
+            resultArray.push(valuesArray);
+            }
+
+            // console.log("line 56:", resultArray);
+
+            setTableData2(resultArray); // Update state with processed values
+        } else {
+            console.log("No data found.");
+        }
+        } catch (error) {
+        console.error('Error fetching data:', error);
+        }
+    };
+    
+    fetchData(); // Call the async function
+    }, []);
+      
+    const handleRowPress2 = (rowData) => {
+        // Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
+        navigation.navigate('Details_of_Counselee',{data: rowData,counsellorEmail: modifiedEmail,batch:"Third_Year"})
+    }     
+    // -------------------End of getting from database for table 2------------------------- \\
+
+    // ----------------------------Get from database for table 3---------------------------- \\
+    const [tableData3, setTableData3] = useState([]);
+    useEffect(() => {
+    const fetchData = async () => {
+        try {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/Fourth_Year/Emails/`);
+
+        // Wrap the event listener in a Promise
+        const snapshotPromise = new Promise((resolve) => {
+            Test.on('value', (snapshot) => {
+            resolve(snapshot);
+            });
+        }); 
+
+        // Wait for the Promise to resolve
+        const snapshot = await snapshotPromise;
+
+        const data = snapshot.val();
+        // console.log("line 49:", data);
+
+        if (data) {
+            const resultArray = [];
+
+            for (const key in data) {
+            const userData = data[key];
+            const datesArray = Object.keys(userData.Dates).sort();
+            const lastDate = datesArray[datesArray.length - 1];
+            const lastObject = userData.Dates[lastDate];
+            
+            const valuesArray = [
+                userData.Name,
+                lastDate,
+                lastObject.Attendance,
+                lastObject.Chanting,
+                lastObject.Hearing.toString(),
+                lastObject.Reading.toString()
+            ];
+
+            resultArray.push(valuesArray);
+            }
+
+            // console.log("line 56:", resultArray);
+
+            setTableData3(resultArray); // Update state with processed values
+        } else {
+            console.log("No data found.");
+        }
+        } catch (error) {
+        console.error('Error fetching data:', error);
+        }
+    };
+    
+    fetchData(); // Call the async function
+    }, []);
+      
+    const handleRowPress3 = (rowData) => {
+        // Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
+        navigation.navigate('Details_of_Counselee',{data: rowData,counsellorEmail: modifiedEmail,batch:"Fourth_Year"})
+    }     
+    // -------------------End of getting from database for table 3------------------------- \\
+
+    // ----------------------------Get from database for table 4---------------------------- \\
+    const [tableData4, setTableData4] = useState([]);
+    useEffect(() => {
+    const fetchData = async () => {
+        try {
+        const Test = database().ref(`/Counsellor/${modifiedEmail}/PassOut/Emails/`);
+
+        // Wrap the event listener in a Promise
+        const snapshotPromise = new Promise((resolve) => {
+            Test.on('value', (snapshot) => {
+            resolve(snapshot);
+            });
+        }); 
+
+        // Wait for the Promise to resolve
+        const snapshot = await snapshotPromise;
+
+        const data = snapshot.val();
+        // console.log("line 49:", data);
+
+        if (data) {
+            const resultArray = [];
+
+            for (const key in data) {
+            const userData = data[key];
+            const datesArray = Object.keys(userData.Dates).sort();
+            const lastDate = datesArray[datesArray.length - 1];
+            const lastObject = userData.Dates[lastDate];
+            
+            const valuesArray = [
+                userData.Name,
+                lastDate,
+                lastObject.Attendance,
+                lastObject.Chanting,
+                lastObject.Hearing.toString(),
+                lastObject.Reading.toString()
+            ];
+
+            resultArray.push(valuesArray);
+            }
+
+            // console.log("line 56:", resultArray);
+
+            setTableData4(resultArray); // Update state with processed values
+        } else {
+            console.log("No data found.");
+        }
+        } catch (error) {
+        console.error('Error fetching data:', error);
+        }
+    };
+    
+    fetchData(); // Call the async function
+    }, []);
+      
+    const handleRowPress4 = (rowData) => {
+        // Alert.alert('Row Pressed', `Counselees: ${rowData[0]}, Date: ${rowData[1]}`);
+        navigation.navigate('Details_of_Counselee',{data: rowData,counsellorEmail: modifiedEmail,batch:"PassOut"})
+    }     
+    // -------------------End of getting from database for table 3------------------------- \\
     
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
@@ -130,23 +313,72 @@ const Home_C = ({navigation}) => {
                     </Table>
                 </View>
 
-                {/* <View style={{flex: 1, padding: 16, paddingTop: 10}}>
+                <View style={{flex: 1, padding: 16, paddingTop: 10}}>
                     <Text style={{
                         justifyContent: 'center',
                         alignSelf: 'center',
                         fontSize: 25,
                         marginTop: 10,
-                        fontWeight: 'bold',     
+                        fontWeight: 'bold',
                         color: 'black'
                     }}>Third Year</Text>
                     <Table borderStyle={styles.border}>
                         <Row data={tableHead} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
-                        {tableData2.map((rowData, index) => (
-                            <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
-                                onPress={() => handleRowPress1(rowData)} />
-                        ))}
+                        {tableData1.length === 0 ? (
+                        <Text>No data to show</Text>
+                        ) : (
+                            tableData2.map((rowData, index) => (
+                                <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
+                                    onPress={() => handleRowPress2(rowData)} />
+                            ))
+                        )}
                     </Table>
-                </View> */}  
+                </View>
+
+                <View style={{flex: 1, padding: 16, paddingTop: 10}}>
+                    <Text style={{
+                        justifyContent: 'center',
+                        alignSelf: 'center',
+                        fontSize: 25,
+                        marginTop: 10,
+                        fontWeight: 'bold',
+                        color: 'black'
+                    }}>Fourth Year</Text>
+                    <Table borderStyle={styles.border}>
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
+                        {tableData1.length === 0 ? (
+                        <Text>No data to show</Text>
+                        ) : (
+                            tableData3.map((rowData, index) => (
+                                <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
+                                    onPress={() => handleRowPress3(rowData)} />
+                            ))
+                        )}
+                    </Table>
+                </View>
+
+                <View style={{flex: 1, padding: 16, paddingTop: 10}}>
+                    <Text style={{
+                        justifyContent: 'center',
+                        alignSelf: 'center',
+                        fontSize: 25,
+                        marginTop: 10,
+                        fontWeight: 'bold',
+                        color: 'black'
+                    }}>Pass Out</Text>
+                    <Table borderStyle={styles.border}>
+                        <Row data={tableHead} style={styles.head} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]} />
+                        {tableData1.length === 0 ? (
+                        <Text>No data to show</Text>
+                        ) : (
+                            tableData4.map((rowData, index) => (
+                                <Rows key={index} data={[rowData]} textStyle={styles.text} flexArr={[2, 2, 2, 1, 1, 1]}
+                                    onPress={() => handleRowPress4(rowData)} />
+                            ))
+                        )}
+                    </Table>
+                </View>
+
             </ScrollView>
         </SafeAreaView>
         </LinearGradient>

@@ -6,7 +6,7 @@ import LinearGradient from "react-native-linear-gradient";
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 
-const Add_Delete_C = () => {
+const Add_Delete_C = ({navigation}) => {
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const { logout } = useContext(AuthContext)
@@ -111,12 +111,33 @@ const Add_Delete_C = () => {
                         defaultValue={password}
                     />
                 </View>
-                <View style={{margin: "3%"}}>
+                <View style={{margin: "3%",marginBottom:'10%'}}>
                     <TouchableOpacity style={styles.button} onPress={() => handleAdd()}>
                         <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>ADD</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{margin: "3%"}}>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Attendance')}>
+                        <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>Attendance</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{margin: "3%"}}>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Chanting')}>
+                        <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>Chanting</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{margin: "3%"}}>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Hearing')}>
+                        <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>Hearing</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{margin: "3%"}}>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Reading')}>
+                        <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>Reading</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={{margin: "3%",marginTop:'10%'}}>
                     <TouchableOpacity style={styles.button} onPress={() => logout()}>
                         <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>Log Out</Text>
                     </TouchableOpacity>

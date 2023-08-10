@@ -1,10 +1,15 @@
-import React,{useState} from "react";
+// 1. https://chat.openai.com/share/2e943a6c-8a56-42f7-8d49-795ab5484ae5
+// 2. https://chat.openai.com/share/42f0a7b7-b45b-41ea-9bc5-3a2ebf56879f
+import React,{useState,useEffect} from "react";
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Pressable, useColorScheme, TouchableOpacity } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import {PieChart, LineChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Octicons'; // dot-fill
 import { Dimensions } from "react-native";
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
+import LinearGradient from "react-native-linear-gradient";
 
 const Attendance = () => {
     const colorScheme = useColorScheme();
@@ -14,7 +19,7 @@ const Attendance = () => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = String(date.getFullYear());
-        return `${day}/${month}/${year}`;
+        return `${day}-${month}-${year}`;
     };
 
     const getLast30Days = () => {
@@ -31,22 +36,242 @@ const Attendance = () => {
       return last30Days;
     };
 
-    // TODO:
-    // After last 30 day column, For morning program attendance three columns- for total absent, total present and total late
-    // second year
-    const tableHead1 = ['Counselee  ', ...getLast30Days()];
-    const tableData1 = [
-        ['John', '15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10','15:10', '15:10', '15:10'],
-        ['Wick', '', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', ''],
-        ['Cena', '', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', ''],
-        ['John', '', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', ''],
-        ['Wick', '', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', ''],
-        ['Cena', '', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', '','', '', ''],
-    ];
+    const currentUser = auth().currentUser;
+    var modifiedEmail = currentUser.email.replace(/\./g, '_');
 
-    // similarly TODO: add for third, fourth and passout
+    const [tableHead,setTableHead] = useState(['Counselee',...getLast30Days(),'Total Present','Total Absent','Total Late'])
+    // Second Year
+    const [tableData,setTableData] = useState([])
 
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Second_Year/Emails/`);
+          await Test.on('value', snapshot => {
+            const data = snapshot.val();
+            const dates = getLast30Days();
+            const tableData10 = [];
+    
+            // Iterate through each user's data
+            for (const email in data) {
+              const userData = data[email];
+              const attendanceRow = [userData.Name];
+              let presentTotal = 0;
+              let absentTotal = 0;
+              let lateTotal = 0;
+    
+              // Iterate through each date and get attendance value
+              for (const date of dates) {
+                if (userData.Dates[date]) {
+                  const attendanceValue = userData.Dates[date].Attendance;
+                  attendanceRow.push(attendanceValue);
+    
+                  if (attendanceValue === "Present") {
+                    presentTotal++;
+                  } else if (attendanceValue === "Absent") {
+                    absentTotal++;
+                  } else if (attendanceValue === "Late") {
+                    lateTotal++;
+                  }
+                } else {
+                  attendanceRow.push(null);
+                }
+              }
+    
+              attendanceRow.push(`${presentTotal}`);
+              attendanceRow.push(`${absentTotal}`);
+              attendanceRow.push(`${lateTotal}`);
+    
+              tableData10.push(attendanceRow);
+            }
+    
+            setTableData(tableData10);
+            // console.log("line 85:",tableData);
+          });
+        };
+    
+        fetchData();
+    
+        return () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Second_Year/Emails/`);
+          Test.off();
+        };
+    }, []);
+
+    // Third Year
+    const [tableData1,setTableData1] = useState([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Third_Year/Emails/`);
+          await Test.on('value', snapshot => {
+            const data = snapshot.val();
+            const dates = getLast30Days();
+            const tableData10 = [];
+    
+            // Iterate through each user's data
+            for (const email in data) {
+              const userData = data[email];
+              const attendanceRow = [userData.Name];
+              let presentTotal = 0;
+              let absentTotal = 0;
+              let lateTotal = 0;
+    
+              // Iterate through each date and get attendance value
+              for (const date of dates) {
+                if (userData.Dates[date]) {
+                  const attendanceValue = userData.Dates[date].Attendance;
+                  attendanceRow.push(attendanceValue);
+    
+                  if (attendanceValue === "Present") {
+                    presentTotal++;
+                  } else if (attendanceValue === "Absent") {
+                    absentTotal++;
+                  } else if (attendanceValue === "Late") {
+                    lateTotal++;
+                  }
+                } else {
+                  attendanceRow.push(null);
+                }
+              }
+    
+              attendanceRow.push(`${presentTotal}`);
+              attendanceRow.push(`${absentTotal}`);
+              attendanceRow.push(`${lateTotal}`);
+    
+              tableData10.push(attendanceRow);
+            }
+    
+            setTableData1(tableData10);
+            // console.log("line 85:",tableData);
+          });
+        };
+    
+        fetchData();
+    
+        return () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Third_Year/Emails/`);
+          Test.off();
+        };
+      }, []);
+
+    // Fourth Year
+    const [tableData2,setTableData2] = useState([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Fourth_Year/Emails/`);
+          await Test.on('value', snapshot => {
+            const data = snapshot.val();
+            const dates = getLast30Days();
+            const tableData10 = [];
+    
+            // Iterate through each user's data
+            for (const email in data) {
+              const userData = data[email];
+              const attendanceRow = [userData.Name];
+              let presentTotal = 0;
+              let absentTotal = 0;
+              let lateTotal = 0;
+    
+              // Iterate through each date and get attendance value
+              for (const date of dates) {
+                if (userData.Dates[date]) {
+                  const attendanceValue = userData.Dates[date].Attendance;
+                  attendanceRow.push(attendanceValue);
+    
+                  if (attendanceValue === "Present") {
+                    presentTotal++;
+                  } else if (attendanceValue === "Absent") {
+                    absentTotal++;
+                  } else if (attendanceValue === "Late") {
+                    lateTotal++;
+                  }
+                } else {
+                  attendanceRow.push(null);
+                }
+              }
+    
+              attendanceRow.push(`${presentTotal}`);
+              attendanceRow.push(`${absentTotal}`);
+              attendanceRow.push(`${lateTotal}`);
+    
+              tableData10.push(attendanceRow);
+            }
+    
+            setTableData2(tableData10);
+            // console.log("line 85:",tableData);
+          });
+        };
+    
+        fetchData();
+    
+        return () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Fourth_Year/Emails/`);
+          Test.off();
+        };
+      }, []);
+
+    // Pass out
+    const [tableData3,setTableData3] = useState([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Fourth_Year/Emails/`);
+          await Test.on('value', snapshot => {
+            const data = snapshot.val();
+            const dates = getLast30Days();
+            const tableData10 = [];
+    
+            // Iterate through each user's data
+            for (const email in data) {
+              const userData = data[email];
+              const attendanceRow = [userData.Name];
+              let presentTotal = 0;
+              let absentTotal = 0;
+              let lateTotal = 0;
+    
+              // Iterate through each date and get attendance value
+              for (const date of dates) {
+                if (userData.Dates[date]) {
+                  const attendanceValue = userData.Dates[date].Attendance;
+                  attendanceRow.push(attendanceValue);
+    
+                  if (attendanceValue === "Present") {
+                    presentTotal++;
+                  } else if (attendanceValue === "Absent") {
+                    absentTotal++;
+                  } else if (attendanceValue === "Late") {
+                    lateTotal++;
+                  }
+                } else {
+                  attendanceRow.push(null);
+                }
+              }
+    
+              attendanceRow.push(`${presentTotal}`);
+              attendanceRow.push(`${absentTotal}`);
+              attendanceRow.push(`${lateTotal}`);
+    
+              tableData10.push(attendanceRow);
+            }
+    
+            setTableData3(tableData10);
+            // console.log("line 85:",tableData);
+          });
+        };
+    
+        fetchData();
+    
+        return () => {
+          const Test = database().ref(`/Counsellor/${modifiedEmail}/Fourth_Year/Emails/`);
+          Test.off();
+        };
+      }, []);
+
+      const widthArr = new Array(tableHead.length).fill(100);
+    
     return(
+      <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
@@ -59,9 +284,20 @@ const Attendance = () => {
                     <ScrollView horizontal={true}>
                         <View>
                             <Table borderStyle={styles.border}>
-                                <Row data={tableHead1} style={styles.head} textStyle={styles.text}/>
-                                {/* TODO: Add ontouch (if necessary) */}
-                                <Rows data={tableData1} textStyle={styles.text}/>
+                            <Row
+                                data={tableHead}
+                                style={styles.head}
+                                textStyle={styles.text}
+                                widthArr={widthArr}
+                            />
+                            {tableData.map((rowData, index) => (
+                                <Row
+                                    key={index}
+                                    data={rowData}
+                                    textStyle={styles.text}
+                                    widthArr={widthArr}
+                                />
+                            ))}
                             </Table>
                         </View>
                     </ScrollView>
@@ -73,10 +309,21 @@ const Attendance = () => {
                     </Text>
                     <ScrollView horizontal={true}>
                         <View>
-                            <Table borderStyle={styles.border}>
-                                <Row data={tableHead1} style={styles.head} textStyle={styles.text}/>
-                                {/* TODO: Add ontouch (if necessary) */}
-                                <Rows data={tableData1} textStyle={styles.text}/>
+                            <Table borderStyle={styles.border}>  
+                                <Row
+                                data={tableHead}
+                                style={styles.head}
+                                textStyle={styles.text}
+                                widthArr={widthArr}
+                            />
+                            {tableData1.map((rowData, index) => (
+                                <Row
+                                    key={index}
+                                    data={rowData}
+                                    textStyle={styles.text}
+                                    widthArr={widthArr}
+                                />
+                            ))}
                             </Table>
                         </View>
                     </ScrollView>
@@ -89,9 +336,20 @@ const Attendance = () => {
                     <ScrollView horizontal={true}>
                         <View>
                             <Table borderStyle={styles.border}>
-                                <Row data={tableHead1} style={styles.head} textStyle={styles.text}/>
-                                {/* TODO: Add ontouch (if necessary) */}
-                                <Rows data={tableData1} textStyle={styles.text}/>
+                            <Row
+                                data={tableHead}
+                                style={styles.head}
+                                textStyle={styles.text}
+                                widthArr={widthArr}
+                            />
+                            {tableData2.map((rowData, index) => (
+                                <Row
+                                    key={index}
+                                    data={rowData}
+                                    textStyle={styles.text}
+                                    widthArr={widthArr}
+                                />
+                            ))}
                             </Table>
                         </View>
                     </ScrollView>
@@ -104,17 +362,28 @@ const Attendance = () => {
                     <ScrollView horizontal={true}>
                         <View>
                             <Table borderStyle={styles.border}>
-                                <Row data={tableHead1} style={styles.head} textStyle={styles.text}/>
-                                {/* TODO: Add ontouch (if necessary) */}
-                                <Rows data={tableData1} textStyle={styles.text}/>
+                            <Row
+                                data={tableHead}
+                                style={styles.head}
+                                textStyle={styles.text}
+                                widthArr={widthArr}
+                            />
+                            {tableData3.map((rowData, index) => (
+                                <Row
+                                    key={index}
+                                    data={rowData}
+                                    textStyle={styles.text}
+                                    widthArr={widthArr}
+                                />
+                            ))}
                             </Table>
                         </View>
                     </ScrollView>
                 </View>
                 
-    
             </ScrollView>
         </SafeAreaView>
+      </LinearGradient>
     )
 }
 
@@ -147,9 +416,13 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     container1: { flex: 1, padding: 8, paddingTop: 25, backgroundColor: '#fff' },
-    head: { height: 70, backgroundColor: '#FFC600' },
-    text: { margin: 6, textAlign: 'center', alignContent:'center',alignSelf:'center' },
-    border: { borderWidth: 1, borderColor: '#000000' },
+    container2: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff'},
+    head: { height: 40, backgroundColor: '#FFC600' },
+        text: { margin: 6, textAlign: 'center' },
+        border: { borderWidth: 1, borderColor: '#000000' },
+        tableWrapper: { flexDirection: 'row' }, // Added wrapper for the table
+        row: { flexDirection: 'row', width: '100%' }, // Adjusted row style
+        cell: { flex: 1, borderWidth: 1, borderColor: '#000000', padding: 6 }, // Adjusted cell style
 })
 
 export default Attendance

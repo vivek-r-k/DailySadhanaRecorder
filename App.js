@@ -19,8 +19,11 @@ import Providers from "./Screens/Authetication";
 
 const App = () => {
   return(
-    
-      <Providers />
+    <Providers />
+  // <Attendance />
+  // <Chanting />    
+  // <Hearing />
+  // <Reading />
     // <SignIn />
 
     // <UserProfile />

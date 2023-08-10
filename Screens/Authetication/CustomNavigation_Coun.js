@@ -10,6 +10,10 @@ import SingleDateData from '../Counsellors/SingleDateData';
 import Add_Delete_C from '../Counsellors/Add_Delete_C';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import Attendance from '../Counsellors/Sidebar/Attendance';
+import Chanting from '../Counsellors/Sidebar/Chanting';
+import Reading from '../Counsellors/Sidebar/Reading';
+import Hearing from '../Counsellors/Sidebar/Hearing';
 const Stack = createNativeStackNavigator();
 
 const Home_C_Navigator = () => {
@@ -59,6 +63,27 @@ const Profile = () => {
             <Stack.Screen 
                 name="Add_Delete_C"
                 component={Add_Delete_C}
+              options={{headerShown:false}}
+            />
+            
+            <Stack.Screen
+                name="Attendance"
+                component={Attendance}
+              options={{headerShown:false}}
+            />
+            <Stack.Screen
+                name="Chanting"
+                component={Chanting}
+              options={{headerShown:false}}
+            />
+            <Stack.Screen
+                name="Hearing"
+                component={Hearing}
+              options={{headerShown:false}}
+            />
+            <Stack.Screen
+                name="Reading"
+                component={Reading}
               options={{headerShown:false}}
             />
         </Stack.Navigator>
