@@ -34,8 +34,8 @@ const SignIn = ({navigation}) => {
                 Alert.alert("Password reset link has been sent to your email successfully!")
             })
             .catch((error) => {
-                console.log(error);
-                Alert.alert(error)
+                // console.log("line 37",error);
+                Alert.alert(`You are logging for first time, so set password and login`)
             })
         }
         else{
@@ -46,30 +46,38 @@ const SignIn = ({navigation}) => {
     const [counsellorData, setCounsellorData] = useState({});
     useEffect(() => {
         const fetchData = async () => {
-        const Test = database().ref('/Admin/');
+        const Test = database().ref('/');
         Test.on('value', snapshot => {
             const data = snapshot.val();
-            const counsellors = data?.Counsellors; // Access the "Counsellors" object
-            // console.log("line 53: ",counsellors);
-
-            const modifiedData = {};
-            for (const key in counsellors) {
-                const modifiedKey = key.replace(/_/g, '.');
-                modifiedData[modifiedKey] = counsellors[key];
-              }
+            const extractEmails = (obj) => {
+                const emails = [];
               
-            //   console.log("line 61:",modifiedData);
-            // Check if the "Counsellors" object exists
-            if (counsellors) {
-            setCounsellorData(modifiedData); // Update the state with the "Counsellors" object
-            }
-            console.log("line 66:",counsellorData)
+                const traverse = (obj) => {
+                  for (const key in obj) {
+                    if (typeof obj[key] === 'object') {
+                      if (/@/.test(key)) {
+                        const formattedEmail = key.replace(/_/g, '.');
+                        emails.push(formattedEmail);
+                      }
+                      traverse(obj[key]);
+                    }
+                  }
+                };
+              
+                traverse(obj);
+                return emails;
+              };
+      
+            const modifiedData = extractEmails(data);
+            console.log("Modified data:", modifiedData);
+            setCounsellorData(modifiedData);  
+            console.log("line 66:",counsellorData) 
         });
         };
         fetchData(); // Call the async function
 
         return () => {
-        const Test = database().ref('/Admin/');
+        const Test = database().ref('/');
         Test.off();
         };
     }, []);
@@ -79,10 +87,10 @@ const SignIn = ({navigation}) => {
     const handleLogIn = (email, password) => {
         // Loop through the counsellorData object
         for (const counselorName in counsellorData) {
-            console.log("CounselorName:",counsellorData[counselorName].Email);  
+            console.log("CounselorName:",counsellorData[counselorName]);  
             // console.log("counsellorData:",counsellorData);  
           if (
-            counselorName === email 
+            counsellorData[counselorName] === email 
             // counsellorData[counselorName].Password === password
           ) {
             // console.log("87: ",counsellorData[counselorName].Email,email);
