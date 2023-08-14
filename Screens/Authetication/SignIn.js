@@ -63,7 +63,7 @@ const SignIn = ({navigation}) => {
             if (counsellors) {
             setCounsellorData(modifiedData); // Update the state with the "Counsellors" object
             }
-            // console.log("line 66:",counsellorData)
+            console.log("line 66:",counsellorData)
         });
         };
         fetchData(); // Call the async function
@@ -75,25 +75,32 @@ const SignIn = ({navigation}) => {
     }, []);
 
     // TODO: if any login or signup issues then the code is here
+    let count = 0;
     const handleLogIn = (email, password) => {
         // Loop through the counsellorData object
         for (const counselorName in counsellorData) {
+            console.log("CounselorName:",counsellorData[counselorName].Email);  
+            // console.log("counsellorData:",counsellorData);  
           if (
-            counsellorData[counselorName].Email === email &&
-            counsellorData[counselorName].Password === password
+            counselorName === email 
+            // counsellorData[counselorName].Password === password
           ) {
+            // console.log("87: ",counsellorData[counselorName].Email,email);
+            // console.log("88:",counsellorData[counselorName].Password,password);
             try {
               register(email, password);
-              return;
+              count = 1;
+              return; 
             } catch (error) {
               console.error("Error occurred during registration:", error);
               return;
             }
           }
         }
-        login(email,password)
+        if(count == 0)   login(email,password) 
+        else count = 0;
         // console.log("Invalid email or password");
-      };
+    };
 
     return (
       <View style={styles.container}>

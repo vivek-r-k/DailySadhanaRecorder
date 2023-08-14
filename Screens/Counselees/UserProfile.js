@@ -1,5 +1,5 @@
 import React,{useState,useContext,useEffect} from "react";
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, useColorScheme, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, ScrollView, TextInput, Alert, useColorScheme, TouchableOpacity, ActivityIndicator } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import {PieChart} from 'react-native-chart-kit'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,7 +17,17 @@ const formatDate = (date) => {
     return `${day}-${month}-${year}`;
   };
 
-const UserProfile = () => {
+const UserProfile = ({navigation}) => {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+      // Simulate a loading delay of 10 seconds
+      const loadingTimeout = setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+
+      return () => clearTimeout(loadingTimeout);
+    }, []);
     // Below is for getting the name
     const currentUser = auth().currentUser;
     var modifiedEmail = currentUser.email.replace(/\./g, '_');
@@ -33,11 +43,7 @@ const UserProfile = () => {
             const Test = database().ref('/Counsellor1/');
             await Test.on('value', async snapshot => {
                 const data = snapshot.val();
-                const nameObject = data["01fe20bei015@kletech_ac_in"]["Second_Year"]["Emails"][modifiedEmail];
-    
-                if (nameObject && nameObject.Name) {
-                    setName1(nameObject.Name);
-                }
+                // console.log("36:", data);
     
                 let emailId;
                 let batch;
@@ -54,52 +60,26 @@ const UserProfile = () => {
                         break;
                     }
                 }
+    
                 setCounEmail(emailId);
                 setWhichBatch(batch);
+    
+                if (emailId && batch && data[emailId] && data[emailId][batch]) {
+                    const nameObject = data[emailId][batch]["Emails"][modifiedEmail];
+                    if (nameObject && nameObject.Name) {
+                        setName1(nameObject.Name);
+                    }
+                }
             });
         };
         fetchData();
-    }, []);    
+    }, []);
+      
 
     const colorScheme = useColorScheme();
     const titleColor = colorScheme === "dark" ? "#ffffff" : "ffffff";
     const { logout } = useContext(AuthContext)
-    // dummy data for piechart
-    const data = [
-        {
-          name: "Present",
-          total: 25,
-          color: "green",
-          legendFontColor: "#000000",
-          legendFontSize: 15
-        },
-        {
-          name: "Absent",
-          total: 3,
-          color: "red",
-          legendFontColor: "#000000",
-          legendFontSize: 15
-        },
-        {
-          name: "Late",
-          total: 2,
-          color: "yellow",
-          legendFontColor: "#000000",
-          legendFontSize: 15
-        }
-    ]
-
-    const chartConfig = {
-        backgroundGradientFrom: "#1E2923",
-        backgroundGradientFromOpacity: 0,
-        backgroundGradientTo: "#08130D",
-        backgroundGradientToOpacity: 0.5,
-        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-        strokeWidth: 2, // optional, default 3
-        barPercentage: 0.5,
-        useShadowColorFromDataset: false // optional
-    };
-
+    
     const [value, onChange] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -167,7 +147,12 @@ const UserProfile = () => {
     return(
         <LinearGradient colors={['#08d4c4', '#01ab9d']} style={{flex:1}}>
         <SafeAreaView>
-            <ScrollView>
+        {/* {isLoading ? (
+                  // Display the loader while isLoading is true
+                  <ActivityIndicator size="large" color="blue" />
+                ) : (
+                    <> */}
+                        <ScrollView>
                 <View style={styles.container}>
                     <Text style={styles.UserName}>{name1}</Text>
                 </View>
@@ -241,11 +226,19 @@ const UserProfile = () => {
                     </TouchableOpacity>
                 </View>
                 <View style={{margin: "3%"}}>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BatchDetails',{counEmail,whichBatch})}>
+                        <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>See your bacthmates data</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{margin: "3%"}}>
                     <TouchableOpacity style={styles.button} onPress={() => logout()}>
                         <Text style={{fontWeight: 'bold', color: '#000000', fontSize: 20}}>Log Out</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+                    {/* </>
+                )
+        } */}
         </SafeAreaView>
         </LinearGradient>
     )

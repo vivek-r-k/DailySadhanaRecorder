@@ -13,6 +13,7 @@ import UserProfile from '../Counselees/UserProfile';
 import AdminAppStack from './AdminAppstack';
 import CounAppStack from './CounAppstack';
 import database from '@react-native-firebase/database';
+import UserAppStack from './UserAppStack';
 
 const Routes = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -78,7 +79,8 @@ const Routes = () => {
         ) : (
           // TODO: here also check only added emails to log in because, its my bad that i didn't
           // handle backend
-        <UserProfile />
+        // <UserProfile />
+        <UserAppStack />
         )}  
 
         </NavigationContainer>
